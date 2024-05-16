@@ -8,11 +8,17 @@ interface Amulet {
   id: string
 }
 
+interface AmuletSummary {
+  amuletName: string | null
+  stats: string[]
+  ids: string[]
+}
+
 const parser = new DOMParser()
 
 function extractAmuletDetails(amuletImageElement: HTMLImageElement) {
   const statMatches = amuletImageElement.alt.matchAll(/(\+.*)\n/g)
-  const stats = [...statMatches].map(e => e[1])
+  const stats = [...statMatches].map(e => e[1]).filter(s => !s.match(/Experience vs/))
 
   const amuletNameMatch = amuletImageElement.alt.match(/^(.*)\n/)
   const amuletName: string | null = amuletNameMatch ? amuletNameMatch[1] : null
@@ -63,6 +69,21 @@ function extractAmuletsFromHtmlDumps(inventoryHtml: HtmlDumpInfo[]): Amulet[] {
   return amulets
 }
 
+function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
+  const amuletSummary = new Map<string, AmuletSummary>()
+  for (const amulet of amulets) {
+    const key = `${amulet.amuletName ?? 'unknown'}_${amulet.stats.join('|')}`
+    const existingSummary = amuletSummary.get(key)
+    if (existingSummary != null) {
+      existingSummary.ids.push(amulet.id)
+    } else {
+      amuletSummary.set(key, { amuletName: amulet.amuletName, ids: [amulet.id], stats: amulet.stats } satisfies AmuletSummary)
+    }
+  }
+
+  return amuletSummary
+}
+
 export default function ResultsScreen() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -77,22 +98,26 @@ export default function ResultsScreen() {
   if (inventoryHtml == null || inventoryHtml.length === 0) return <div>No inventory data found.</div>
 
   const amulets = extractAmuletsFromHtmlDumps(inventoryHtml)
+  const amuletSummary = summarizeAmulets(amulets)
 
   return <table>
     <thead>
     <tr>
       <th>Name</th>
       <th>Stats</th>
+      <th>Page & ID</th>
     </tr>
     </thead>
     <tbody>
-    {amulets.map(a => {
-      return <tr key={a.id} onClick={e => {
+    {[...amuletSummary].map(([id, summary]) => {
+      return <tr key={id} onClick={e => {
         e.preventDefault()
-        navigator.clipboard.writeText(a.id).catch((r: unknown) => {console.log(r)})
       }}>
-        <td>{a.amuletName ?? 'Name unknown'}</td>
-        <td>{a.stats.map((stat, index) => <ul key={`${a.id}_${index.toString()}`}>{stat}</ul>)}</td>
+        <td>{summary.amuletName ?? 'Name unknown'}</td>
+        <td>{summary.stats.length ? summary.stats.map(stat => <ul key={stat}>{stat}</ul>) : 'Experience vs [...]'}</td>
+        <td>{summary.ids.slice(0, 5).map(id => <ul key={id} onClick={() => {
+          navigator.clipboard.writeText(id).catch((r: unknown) => {console.error(r)})
+        }}>{id}</ul>)}</td>
       </tr>
     })}
     </tbody>

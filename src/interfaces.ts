@@ -7,3 +7,14 @@ export interface HtmlDumpInfo {
   pageHtml: string | null
   deleted: boolean
 }
+
+export interface Amulet {
+  amuletName: string | null
+  stats: Stat[]
+  id: string
+}
+
+export interface Stat {
+  statName: string
+  bonus: number
+}

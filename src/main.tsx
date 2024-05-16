@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './Home.tsx'
 import './index.css'
-import ResultsScreen from './ResultsScreen.tsx'
+import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
 
 const router = createBrowserRouter([
   {

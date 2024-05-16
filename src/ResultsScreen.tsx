@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { HtmlDumpInfo, LocationState } from './interfaces.ts'
 
 interface Amulet {
   amuletName: string | null
@@ -38,39 +39,44 @@ const extractAmuletsFromHtml = (html: string): Amulet[] => {
   if (html === '') throw new Error()
   const parsedHtml = parser.parseFromString(html, 'text/html')
   const mainInventories = parsedHtml.getElementsByClassName('main-inventory')
-  if (mainInventories.length !== 1) throw new Error('Failed to identify the inventory.')
-  const inventory = mainInventories[0]
-  const inventoryTabs = inventory.children
+  if (mainInventories.length === 0) throw new Error('Failed to identify the inventory.')
 
   const amulets = []
-
-  for (const tab of inventoryTabs) {
-    if (['kindred'].includes(tab.id)) {
-      const amuletsInTab = extractAmuletsFromTab(tab)
-      amulets.push(...amuletsInTab)
+  for (const inventory of mainInventories) {
+    const inventoryTabs = inventory.children
+    for (const tab of inventoryTabs) {
+      if (['kindred'].includes(tab.id)) {
+        const amuletsInTab = extractAmuletsFromTab(tab)
+        amulets.push(...amuletsInTab)
+      }
     }
   }
   return amulets
 }
 
-interface LocationState {
-  inventory: string
+function extractAmuletsFromHtmlDumps(inventoryHtml: HtmlDumpInfo[]): Amulet[] {
+  const amulets = []
+  for (const htmlDump of inventoryHtml.filter(d => !d.deleted)) {
+    if (htmlDump.pageHtml == null) continue
+    amulets.push(...extractAmuletsFromHtml(htmlDump.pageHtml))
+  }
+  return amulets
 }
 
 export default function ResultsScreen() {
   const location = useLocation()
   const navigate = useNavigate()
   const state = location.state as LocationState | undefined
-  const inventoryHtml: string | null = state?.inventory ?? null
+  const inventoryHtml = state?.inventory ?? null
 
   useEffect(() => {
-    if (inventoryHtml == null || inventoryHtml === '') navigate('/')
+    if (inventoryHtml == null || inventoryHtml.length === 0) navigate('/')
     window.history.replaceState({}, document.title)
   }, [inventoryHtml, navigate])
 
-  if (inventoryHtml == null || inventoryHtml === '') return <div>No inventory data found.</div>
+  if (inventoryHtml == null || inventoryHtml.length === 0) return <div>No inventory data found.</div>
 
-  const amulets = extractAmuletsFromHtml(inventoryHtml)
+  const amulets = extractAmuletsFromHtmlDumps(inventoryHtml)
 
   return <table>
     <thead>

@@ -1,56 +1,8 @@
-import commonCircleAmulet from '/amuletCommonCircle.png'
-import commonDiamondAmulet from '/amuletCommonDiamond.png'
-import commonSquareAmulet from '/amuletCommonSquare.png'
-import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
-import legendarySquareAmulet from '/amuletLegendarySquare.png'
-import rareCircleAmulet from '/amuletRareCircle.png'
-import rareDiamondAmulet from '/amuletRareDiamond.png'
-import rareSquareAmulet from '/amuletRareSquare.png'
-import { useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Amulet, AmuletSummary, AmuletTuple, LocationState, Rarity, Shape, Stat } from '../interfaces.ts'
-import { extractAmuletsFromHtmlDumps } from './utils.ts'
-
-const amuletImageMap: Record<Shape, Record<Rarity, string>> = {
-  Square: {
-    [Rarity.Common]: commonSquareAmulet,
-    [Rarity.Rare]: rareSquareAmulet,
-    [Rarity.Legendary]: legendarySquareAmulet
-  },
-  Circle: {
-    [Rarity.Common]: commonCircleAmulet,
-    [Rarity.Rare]: rareCircleAmulet,
-    [Rarity.Legendary]: 'legendaryCircleAmulet'
-  },
-  Diamond: {
-    [Rarity.Common]: commonDiamondAmulet,
-    [Rarity.Rare]: rareDiamondAmulet,
-    [Rarity.Legendary]: legendaryDiamondAmulet
-  }
-}
+import { AmuletSummary, AmuletTuple, HtmlDumpInfo, Rarity, Shape } from '../interfaces.ts'
+import { amuletImageMap } from './utils.ts'
 
 const AmuletImage = ({ rarity, shape }: { rarity: Rarity, shape: Shape }) => {
   return <img src={amuletImageMap[shape][rarity]} alt={`${Rarity[rarity]} ${shape} amulet`} />
-}
-
-function stringifyStats(stats: Stat[]): string {
-  return stats.map(s => `${s.statName}_${String(s.bonus)}`).join('|')
-}
-
-function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
-  const amuletSummary = new Map<string, AmuletSummary>()
-  for (const amulet of amulets) {
-    const stringifiedStats = stringifyStats(amulet.stats)
-    const key = `${String(amulet.rarity)}_${amulet.shape}_${stringifiedStats}`
-    const existingSummary = amuletSummary.get(key)
-    if (existingSummary != null) {
-      existingSummary.locations.push(amulet.location)
-    } else {
-      amuletSummary.set(key, { rarity: amulet.rarity, shape: amulet.shape, locations: [amulet.location], stats: amulet.stats } satisfies AmuletSummary)
-    }
-  }
-
-  return amuletSummary
 }
 
 const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple): number => {
@@ -61,24 +13,21 @@ const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple
   return sumA - sumB
 }
 
-export default function ResultsScreen() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const state = location.state as LocationState | undefined
-  const inventoryHtml = state?.inventory ?? null
-
-  useEffect(() => {
-    if (inventoryHtml == null || inventoryHtml.length === 0) navigate('/')
-    window.history.replaceState({}, document.title)
-  }, [inventoryHtml, navigate])
-
+export default function ResultsScreen({ inventoryHtml }: { inventoryHtml: HtmlDumpInfo[] | null }) {
   if (inventoryHtml == null || inventoryHtml.length === 0) return <div>No inventory data found.</div>
 
-  const amulets = extractAmuletsFromHtmlDumps(inventoryHtml)
-  const amuletSummary = summarizeAmulets(amulets)
+  const amuletTuples = inventoryHtml.map(dumpInfo => dumpInfo.amuletSummary)
+    .filter((amuletSummary): amuletSummary is NonNullable<typeof amuletSummary> => amuletSummary != null)
+    .flatMap(amuletSummary => Array.from(amuletSummary.entries()))
 
   return <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '1000px', flexWrap: 'wrap' }}>
-    {[...amuletSummary].sort(largestStatSumSorter).reverse().map(([id, amulet]) => {
+    <AmuletGrid amuletTuples={amuletTuples} />
+  </div>
+}
+
+const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSummary][] }) => {
+  return amuletTuples.sort(largestStatSumSorter).reverse()
+    .map(([id, amulet]) => {
       const amuletNameParts = []
       if (amulet.rarity) amuletNameParts.push(Rarity[amulet.rarity])
       amuletNameParts.push(amulet.shape)
@@ -89,18 +38,17 @@ export default function ResultsScreen() {
                   style={{ border: '1px solid black', padding: '12px', margin: '6px', borderRadius: '12px', borderColor: 'lightgrey', width: '160px' }}>
         <AmuletImage rarity={amulet.rarity} shape={amulet.shape} /><br />
         <span style={{ fontWeight: 'bold' }}>{amuletName}</span><br />
-        <div style={{ marginTop: 6, marginBottom: 6}}>
-        {
-          amulet.stats.length
-            ? amulet.stats.map(stat => <span style={{ display: 'inline-block' }}
-                                             key={`${stat.statName}_${String(stat.bonus)}`}>{`+${String(stat.bonus)}% ${stat.statName}`}</span>)
-            : 'Experience vs [...]'
-        }</div>
+        <div style={{ marginTop: 6, marginBottom: 6 }}>
+          {
+            amulet.stats.length
+              ? amulet.stats.map(stat => <span style={{ display: 'inline-block' }}
+                                               key={id}>{`+${String(stat.bonus)}% ${stat.statName}`}</span>)
+              : 'Experience vs [...]'
+          }</div>
         {`Count: ${String(amulet.locations.length)}`}<br />
-        {/*{amulet.locations.slice(0, 5).map(amuletLocation => <ul style={{ marginTop: 6, marginBottom: 6 }} key={amuletLocation.id} onClick={() => {*/}
-        {/*  navigator.clipboard.writeText(amuletLocation.id).catch((r: unknown) => {console.error(r)})*/}
-        {/*}}>...{amuletLocation.id.substring(amuletLocation.id.length - 10)} (Page {amuletLocation.page})</ul>)}*/}
+        {/*{amulet.locations.slice(0, 5).map(amuletLocation => <ul style={{ marginTop: 6, marginBottom: 6 }} key={amuletLocation.id} onClick={() => {
+            navigator.clipboard.writeText(amuletLocation.id).catch((r: unknown) => {console.error(r)})
+          }}>...{amuletLocation.id.substring(amuletLocation.id.length - 10)} (Page {amuletLocation.page})</ul>)}*/}
       </div>
-    })}
-  </div>
+    })
 }

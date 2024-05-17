@@ -1,4 +1,13 @@
-import { Amulet, HtmlDumpInfo, Rarity, Shape, Stat } from '../interfaces.ts'
+import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
+import rareDiamondAmulet from '/amuletRareDiamond.png'
+import commonDiamondAmulet from '/amuletCommonDiamond.png'
+import legendaryCircleAmulet from '/amuletLegendaryCircle.png'
+import rareCircleAmulet from '/amuletRareCircle.png'
+import commonCircleAmulet from '/amuletCommonCircle.png'
+import legendarySquareAmulet from '/amuletLegendarySquare.png'
+import rareSquareAmulet from '/amuletRareSquare.png'
+import commonSquareAmulet from '/amuletCommonSquare.png'
+import { Amulet, Rarity, Shape, Stat } from '../interfaces.ts'
 
 const parser = new DOMParser()
 
@@ -64,7 +73,7 @@ const extractAmuletsFromTab = (tab: Element, pageNumber: number): Amulet[] => {
   return amulets
 }
 
-const extractAmuletsFromHtml = (html: string, pageNumber: number): Amulet[] => {
+export const extractAmuletsFromHtml = (html: string, pageNumber: number): Amulet[] => {
   if (html === '') throw new Error()
   const parsedHtml = parser.parseFromString(html, 'text/html')
   const mainInventories = parsedHtml.getElementsByClassName('main-inventory')
@@ -83,11 +92,20 @@ const extractAmuletsFromHtml = (html: string, pageNumber: number): Amulet[] => {
   return amulets
 }
 
-export function extractAmuletsFromHtmlDumps(inventoryHtml: HtmlDumpInfo[]): Amulet[] {
-  const amulets = []
-  for (const htmlDump of inventoryHtml.filter(d => !d.deleted)) {
-    if (htmlDump.pageHtml == null) continue
-    amulets.push(...extractAmuletsFromHtml(htmlDump.pageHtml, htmlDump.pageNumber))
+export const amuletImageMap: Record<Shape, Record<Rarity, string>> = {
+  Square: {
+    [Rarity.Common]: commonSquareAmulet,
+    [Rarity.Rare]: rareSquareAmulet,
+    [Rarity.Legendary]: legendarySquareAmulet
+  },
+  Circle: {
+    [Rarity.Common]: commonCircleAmulet,
+    [Rarity.Rare]: rareCircleAmulet,
+    [Rarity.Legendary]: legendaryCircleAmulet
+  },
+  Diamond: {
+    [Rarity.Common]: commonDiamondAmulet,
+    [Rarity.Rare]: rareDiamondAmulet,
+    [Rarity.Legendary]: legendaryDiamondAmulet
   }
-  return amulets
 }

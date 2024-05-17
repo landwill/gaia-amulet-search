@@ -1,10 +1,6 @@
-export interface LocationState {
-  inventory: HtmlDumpInfo[]
-}
-
 export interface HtmlDumpInfo {
+  amuletSummary: Map<string, AmuletSummary> | null
   pageNumber: number
-  pageHtml: string | null
   deleted: boolean
 }
 
@@ -40,3 +36,25 @@ export enum Rarity {
   Rare,
   Legendary
 }
+
+interface HtmlDumpActionBase {
+  arrayIndex: number
+}
+
+export interface SetPageNumber extends HtmlDumpActionBase {
+  pageNumber: number
+}
+
+export interface SetPageHtml extends HtmlDumpActionBase {
+  pageHtml: string
+}
+
+export interface DeletePage extends HtmlDumpActionBase {
+  deleted: true
+}
+
+interface DeleteDumps {
+  action: 'delete'
+}
+
+export type PageAction = SetPageNumber | SetPageHtml | DeletePage | DeleteDumps

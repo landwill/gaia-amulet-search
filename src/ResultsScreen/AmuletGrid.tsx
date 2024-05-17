@@ -1,4 +1,4 @@
-import { Amulet, AmuletSummary, AmuletTuple, Rarity, Stat } from '../interfaces.ts'
+import { AmuletSummary, AmuletTuple, Rarity } from '../interfaces.ts'
 import { AmuletImage } from './AmuletImage.tsx'
 
 const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple): number => {
@@ -7,26 +7,6 @@ const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple
   const sumB = amuletB.stats.reduce((prev, curr) => prev + curr.bonus, 0)
 
   return sumA - sumB
-}
-
-function stringifyStats(stats: Stat[]): string {
-  return stats.map(s => `${s.statName}_${String(s.bonus)}`).join('|')
-}
-
-export function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
-  const amuletSummary = new Map<string, AmuletSummary>()
-  for (const amulet of amulets) {
-    const stringifiedStats = stringifyStats(amulet.stats)
-    const key = `${String(amulet.rarity)}_${amulet.shape}_${stringifiedStats}`
-    const existingSummary = amuletSummary.get(key)
-    if (existingSummary != null) {
-      existingSummary.locations.push(amulet.location)
-    } else {
-      amuletSummary.set(key, { rarity: amulet.rarity, shape: amulet.shape, locations: [amulet.location], stats: amulet.stats } satisfies AmuletSummary)
-    }
-  }
-
-  return amuletSummary
 }
 
 export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSummary][] }) => {

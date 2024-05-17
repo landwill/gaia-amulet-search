@@ -22,7 +22,6 @@ const isIndexedAction = (action: PageAction): action is SetPageNumber | SetPageH
 }
 
 const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
-  console.debug('Dispatching action:', action)
   if ('action' in action) {
     return INITIAL_HTML_DUMPS_STATE
   }

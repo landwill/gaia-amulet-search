@@ -1,41 +1,12 @@
 import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
 import './App.css'
-import React, { useReducer } from 'react'
+import { useReducer } from 'react'
+import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
 import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml, SetPageNumber } from './interfaces.ts'
 import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
 import { extractAmuletsFromHtml } from './ResultsScreen/utils.ts'
 
 const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amulets: null, pageNumber: 1, deleted: false }]
-
-const PageEntry = ({ arrayIndex, dispatcher, isHtmlPopulated = false, initialPageNumber = 1 }: {
-  dispatcher: React.Dispatch<PageAction>,
-  arrayIndex: number,
-  isHtmlPopulated?: boolean
-  initialPageNumber?: number
-}) => {
-  return <div>
-    <input value={isHtmlPopulated ? 'Page added successfully' : 'Paste HTML here'}
-           readOnly
-           disabled={isHtmlPopulated}
-           onPaste={e => {
-             e.preventDefault()
-             if (isHtmlPopulated) return
-             const pasted = e.clipboardData.getData('text/plain')
-             dispatcher({ arrayIndex, pageHtml: pasted }) // todo remove page 1
-           }}
-    />
-    <input type='number' id='pageNumber' min={1} max={999} defaultValue={initialPageNumber}
-           onChange={e => {
-             dispatcher({ arrayIndex, pageNumber: e.target.value as unknown as number })
-           }} />
-    <button disabled={!isHtmlPopulated} onClick={e => {
-      e.preventDefault()
-      dispatcher({ arrayIndex, deleted: true })
-    }}>
-      Delete
-    </button>
-  </div>
-}
 
 const findFirstMissingPositive = (nums: number[]): number => {
   const seen: boolean[] = []
@@ -51,6 +22,7 @@ const isIndexedAction = (action: PageAction): action is SetPageNumber | SetPageH
 }
 
 const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
+  console.debug('Dispatching action:', action)
   if ('action' in action) {
     return INITIAL_HTML_DUMPS_STATE
   }
@@ -64,6 +36,7 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
   } else {
     const { arrayIndex, ...rest } = action
     newState[arrayIndex] = { ...newState[arrayIndex], ...rest }
+    console.log(newState)
   }
 
   if (newState[newState.length - 1].amulets != null) {
@@ -87,8 +60,8 @@ function Home() {
           htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>
             htmlDumpInfo.deleted
               ? undefined
-              : <PageEntry key={index} dispatcher={setHtmlDump} arrayIndex={index} isHtmlPopulated={htmlDumpInfo.amulets != null}
-                           initialPageNumber={htmlDumpInfo.pageNumber} />)
+              : <HtmlEntryPanel key={index} dispatcher={setHtmlDump} arrayIndex={index} isHtmlPopulated={htmlDumpInfo.amulets != null}
+                                initialPageNumber={htmlDumpInfo.pageNumber} />)
         }
         <div>
           <button style={{ marginRight: '6px' }} onClick={() => {setHtmlDump({ action: 'delete' })}}>

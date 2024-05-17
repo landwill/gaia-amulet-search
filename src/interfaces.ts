@@ -1,5 +1,5 @@
 export interface HtmlDumpInfo {
-  amuletSummary: Map<string, AmuletSummary> | null
+  amulets: Amulet[] | null
   pageNumber: number
   deleted: boolean
 }

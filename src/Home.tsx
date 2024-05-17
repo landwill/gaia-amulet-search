@@ -1,11 +1,11 @@
 import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
 import './App.css'
 import React, { useReducer } from 'react'
-import { Amulet, AmuletSummary, DeletePage, HtmlDumpInfo, PageAction, SetPageHtml, SetPageNumber, Stat } from './interfaces.ts'
+import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml, SetPageNumber } from './interfaces.ts'
 import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
 import { extractAmuletsFromHtml } from './ResultsScreen/utils.ts'
 
-const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amuletSummary: null, pageNumber: 1, deleted: false }]
+const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amulets: null, pageNumber: 1, deleted: false }]
 
 const PageEntry = ({ arrayIndex, dispatcher, isHtmlPopulated = false, initialPageNumber = 1 }: {
   dispatcher: React.Dispatch<PageAction>,
@@ -50,26 +50,6 @@ const isIndexedAction = (action: PageAction): action is SetPageNumber | SetPageH
   return 'arrayIndex' in action
 }
 
-function stringifyStats(stats: Stat[]): string {
-  return stats.map(s => `${s.statName}_${String(s.bonus)}`).join('|')
-}
-
-function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
-  const amuletSummary = new Map<string, AmuletSummary>()
-  for (const amulet of amulets) {
-    const stringifiedStats = stringifyStats(amulet.stats)
-    const key = `${String(amulet.rarity)}_${amulet.shape}_${stringifiedStats}`
-    const existingSummary = amuletSummary.get(key)
-    if (existingSummary != null) {
-      existingSummary.locations.push(amulet.location)
-    } else {
-      amuletSummary.set(key, { rarity: amulet.rarity, shape: amulet.shape, locations: [amulet.location], stats: amulet.stats } satisfies AmuletSummary)
-    }
-  }
-
-  return amuletSummary
-}
-
 const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
   if ('action' in action) {
     return INITIAL_HTML_DUMPS_STATE
@@ -80,16 +60,15 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
   if ('pageHtml' in action) {
     const { arrayIndex, pageHtml } = action
     const amulets = extractAmuletsFromHtml(pageHtml, state[arrayIndex].pageNumber)
-    const amuletSummary = summarizeAmulets(amulets)
-    newState[arrayIndex] = { ...newState[arrayIndex], amuletSummary }
+    newState[arrayIndex] = { ...newState[arrayIndex], amulets }
   } else {
     const { arrayIndex, ...rest } = action
     newState[arrayIndex] = { ...newState[arrayIndex], ...rest }
   }
 
-  if (newState[newState.length - 1].amuletSummary != null) {
+  if (newState[newState.length - 1].amulets != null) {
     const maxPageNumber = findFirstMissingPositive(newState.filter(d => !d.deleted).map(d => d.pageNumber))
-    newState.push({ pageNumber: maxPageNumber, amuletSummary: null, deleted: false })
+    newState.push({ pageNumber: maxPageNumber, amulets: null, deleted: false })
   }
   return newState
 }
@@ -108,7 +87,7 @@ function Home() {
           htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>
             htmlDumpInfo.deleted
               ? undefined
-              : <PageEntry key={index} dispatcher={setHtmlDump} arrayIndex={index} isHtmlPopulated={htmlDumpInfo.amuletSummary != null}
+              : <PageEntry key={index} dispatcher={setHtmlDump} arrayIndex={index} isHtmlPopulated={htmlDumpInfo.amulets != null}
                            initialPageNumber={htmlDumpInfo.pageNumber} />)
         }
         <div>

@@ -109,3 +109,7 @@ export const amuletImageMap: Record<Shape, Record<Rarity, string>> = {
     [Rarity.Legendary]: legendaryDiamondAmulet
   }
 }
+
+export const warnUser = (message: string) => {
+  console.warn(message) // todo display in the UI
+}

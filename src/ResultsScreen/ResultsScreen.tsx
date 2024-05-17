@@ -14,9 +14,9 @@ function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
     const key = `${amulet.amuletName ?? 'unknown'}_${stringifiedStats}`
     const existingSummary = amuletSummary.get(key)
     if (existingSummary != null) {
-      existingSummary.ids.push(amulet.id)
+      existingSummary.locations.push(amulet.location)
     } else {
-      amuletSummary.set(key, { amuletName: amulet.amuletName, ids: [amulet.id], stats: amulet.stats } satisfies AmuletSummary)
+      amuletSummary.set(key, { amuletName: amulet.amuletName, locations: [amulet.location], stats: amulet.stats } satisfies AmuletSummary)
     }
   }
 
@@ -51,6 +51,7 @@ export default function ResultsScreen() {
     <tr>
       <th>Name</th>
       <th>Stats</th>
+      <th>Count</th>
       <th>Page & ID</th>
     </tr>
     </thead>
@@ -60,10 +61,11 @@ export default function ResultsScreen() {
         e.preventDefault()
       }}>
         <td>{summary.amuletName ?? 'Name unknown'}</td>
-        <td>{summary.stats.length ? summary.stats.map(stat => <ul key={`${stat.statName}_${String(stat.bonus)}`}>{`+${String(stat.bonus)}% ${stat.statName}`}</ul>) : 'Experience vs [...]'}</td>
-        <td>{summary.ids.slice(0, 5).map(id => <ul key={id} onClick={() => {
-          navigator.clipboard.writeText(id).catch((r: unknown) => {console.error(r)})
-        }}>{id}</ul>)}</td>
+        <td>{summary.stats.length ? summary.stats.map(stat => <ul style={{ marginTop: 6, marginBottom: 6 }} key={`${stat.statName}_${String(stat.bonus)}`}>{`+${String(stat.bonus)}% ${stat.statName}`}</ul>) : 'Experience vs [...]'}</td>
+        <td>{summary.locations.length}</td>
+        <td>{summary.locations.slice(0, 5).map(amuletLocation => <ul style={{ marginTop: 6, marginBottom: 6 }} key={amuletLocation.id} onClick={() => {
+          navigator.clipboard.writeText(amuletLocation.id).catch((r: unknown) => {console.error(r)})
+        }}>...{amuletLocation.id.substring(amuletLocation.id.length - 10)} (Page {amuletLocation.page})</ul>)}</td>
       </tr>
     })}
     </tbody>

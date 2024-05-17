@@ -19,14 +19,16 @@ describe('extractStats', () => {
 describe('extractAmuletDetails', () => {
   it('extracts all info in ideal conditions', () => {
     const id = '123.456'
+    const pageNumber = 6
+    const location = { id, page: pageNumber}
     const amuletName = '[Kindred] Rare Square Amulet'
     const expectedStats: Stat[] = [{ statName: 'Damage', bonus: 7 }]
     const testAmuletImage = document.createElement('img')
     testAmuletImage.alt = `[Kindred] Rare Square Amulet\n+7% Damage\n`
     testAmuletImage.id = id
 
-    const result = extractAmuletDetails(testAmuletImage)
+    const result = extractAmuletDetails(testAmuletImage, pageNumber)
 
-    expect(result).toStrictEqual({ amuletName, id, stats: expectedStats } satisfies Amulet)
+    expect(result).toStrictEqual({ amuletName, location, stats: expectedStats } satisfies Amulet)
   })
 })

@@ -4,33 +4,37 @@ const parser = new DOMParser()
 
 export function extractStats(amuletImageElement: HTMLImageElement): Stat[] {
   const statMatches = amuletImageElement.alt.matchAll(/\+(\d+)% (\w+)\n/g)
-  return [...statMatches].map(e => ({ statName: e[2], bonus: Number(e[1])} satisfies Stat))//.filter(s => !s.statName.match(/Experience vs/))
+  return [...statMatches].map(e => ({ statName: e[2], bonus: Number(e[1]) } satisfies Stat))//.filter(s => !s.statName.match(/Experience vs/))
 }
 
-export function extractAmuletDetails(amuletImageElement: HTMLImageElement): Amulet {
+export function extractAmuletDetails(amuletImageElement: HTMLImageElement, page: number): Amulet {
   const stats = extractStats(amuletImageElement)
 
   const amuletNameMatch = amuletImageElement.alt.match(/^(.*)\n/)
   const amuletName: string | null = amuletNameMatch ? amuletNameMatch[1] : null
-  return { stats, amuletName, id: amuletImageElement.id }
+  return { stats, amuletName, location: { id: amuletImageElement.id, page } }
 }
 
-const extractAmuletsFromTab = (tab: Element): Amulet[] => {
+function isAmuletLI(listItem: Element) {
+  return listItem instanceof HTMLLIElement && listItem.title.match(/Amulet/)
+}
+
+const extractAmuletsFromTab = (tab: Element, pageNumber: number): Amulet[] => {
   const amulets: Amulet[] = []
   for (const child of tab.children) {
     if (child.tagName !== 'UL') continue
-    for (const amuletListItem of child.children) {
-      if (amuletListItem.tagName !== 'LI') continue
-      if (amuletListItem.children.length !== 1) continue
-      const amuletImageElement = amuletListItem.children[0]
+    for (const listItem of child.children) {
+      if (!isAmuletLI(listItem)) continue
+      if (listItem.children.length !== 1) continue
+      const amuletImageElement = listItem.children[0]
       if (!(amuletImageElement instanceof HTMLImageElement)) continue
-      const { stats, amuletName, id } = extractAmuletDetails(amuletImageElement)
-      amulets.push({ amuletName, stats, id } satisfies Amulet)
+      const { stats, amuletName, location } = extractAmuletDetails(amuletImageElement, pageNumber)
+      amulets.push({ amuletName, stats, location } satisfies Amulet)
     }
   }
   return amulets
 }
-const extractAmuletsFromHtml = (html: string): Amulet[] => {
+const extractAmuletsFromHtml = (html: string, pageNumber: number): Amulet[] => {
   if (html === '') throw new Error()
   const parsedHtml = parser.parseFromString(html, 'text/html')
   const mainInventories = parsedHtml.getElementsByClassName('main-inventory')
@@ -41,7 +45,7 @@ const extractAmuletsFromHtml = (html: string): Amulet[] => {
     const inventoryTabs = inventory.children
     for (const tab of inventoryTabs) {
       if (['kindred'].includes(tab.id)) {
-        const amuletsInTab = extractAmuletsFromTab(tab)
+        const amuletsInTab = extractAmuletsFromTab(tab, pageNumber)
         amulets.push(...amuletsInTab)
       }
     }
@@ -53,7 +57,7 @@ export function extractAmuletsFromHtmlDumps(inventoryHtml: HtmlDumpInfo[]): Amul
   const amulets = []
   for (const htmlDump of inventoryHtml.filter(d => !d.deleted)) {
     if (htmlDump.pageHtml == null) continue
-    amulets.push(...extractAmuletsFromHtml(htmlDump.pageHtml))
+    amulets.push(...extractAmuletsFromHtml(htmlDump.pageHtml, htmlDump.pageNumber))
   }
   return amulets
 }

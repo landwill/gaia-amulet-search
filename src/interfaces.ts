@@ -11,7 +11,7 @@ export interface HtmlDumpInfo {
 export interface Amulet {
   amuletName: string | null
   stats: Stat[]
-  id: string
+  location: AmuletLocation
 }
 
 export interface Stat {
@@ -19,10 +19,15 @@ export interface Stat {
   bonus: number
 }
 
+export interface AmuletLocation {
+  id: string
+  page: number
+}
+
 export interface AmuletSummary {
   amuletName: string | null
   stats: Stat[]
-  ids: string[]
+  locations: AmuletLocation[]
 }
 
 export type AmuletTuple = [string, AmuletSummary]

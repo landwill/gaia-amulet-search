@@ -41,10 +41,6 @@ interface HtmlDumpActionBase {
   arrayIndex: number
 }
 
-export interface SetPageNumber extends HtmlDumpActionBase {
-  pageNumber: number
-}
-
 export interface SetPageHtml extends HtmlDumpActionBase {
   pageHtml: string
 }
@@ -57,4 +53,4 @@ interface DeleteDumps {
   action: 'delete'
 }
 
-export type PageAction = SetPageNumber | SetPageHtml | DeletePage | DeleteDumps
+export type PageAction = SetPageHtml | DeletePage | DeleteDumps

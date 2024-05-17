@@ -2,22 +2,13 @@ import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
 import './App.css'
 import { useReducer } from 'react'
 import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
-import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml, SetPageNumber } from './interfaces.ts'
+import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml } from './interfaces.ts'
 import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
 import { extractAmuletsFromHtml, warnUserOfError } from './ResultsScreen/utils.ts'
 
-const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amulets: null, pageNumber: 1, deleted: false }]
+const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amulets: null, deleted: false, pageNumber: 0 }]
 
-const findFirstMissingPositive = (nums: number[]): number => {
-  const seen: boolean[] = []
-  for (const num of nums) {
-    if (num > 0 && num <= nums.length) seen[num] = true
-  }
-  for (let i = 1; i <= nums.length + 1; i++) if (!seen[i]) return i
-  return nums.length + 1
-}
-
-const isIndexedAction = (action: PageAction): action is SetPageNumber | SetPageHtml | DeletePage => {
+const isIndexedAction = (action: PageAction): action is SetPageHtml | DeletePage => {
   return 'arrayIndex' in action
 }
 
@@ -31,20 +22,18 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
   if ('pageHtml' in action) {
     const { arrayIndex, pageHtml } = action
     try {
-      const amulets = extractAmuletsFromHtml(pageHtml, state[arrayIndex].pageNumber)
-      newState[arrayIndex] = { ...newState[arrayIndex], amulets }
+      const { amulets, pageNumber } = extractAmuletsFromHtml(pageHtml)
+      newState[arrayIndex] = { ...newState[arrayIndex], amulets, pageNumber }
     } catch (error: unknown) {
       warnUserOfError(error, 'Failed to parse the pasted HTML.')
     }
   } else {
     const { arrayIndex, ...rest } = action
     newState[arrayIndex] = { ...newState[arrayIndex], ...rest }
-    console.log(newState)
   }
 
   if (newState[newState.length - 1].amulets != null) {
-    const maxPageNumber = findFirstMissingPositive(newState.filter(d => !d.deleted).map(d => d.pageNumber))
-    newState.push({ pageNumber: maxPageNumber, amulets: null, deleted: false })
+    newState.push({ amulets: null, deleted: false, pageNumber: 0 })
   }
   return newState
 }
@@ -57,14 +46,13 @@ function Home() {
       <div>
         <img src={legendaryDiamondAmulet} className='logo' alt='Legendary diamond amulet icon' height='60px' />
       </div>
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
         <h1>Amulet Search</h1>
         {
           htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>
             htmlDumpInfo.deleted
               ? undefined
-              : <HtmlEntryPanel key={index} dispatcher={setHtmlDump} arrayIndex={index} isHtmlPopulated={htmlDumpInfo.amulets != null}
-                                initialPageNumber={htmlDumpInfo.pageNumber} />)
+              : <HtmlEntryPanel key={index} dispatcher={setHtmlDump} arrayIndex={index} pageNumber={htmlDumpInfo.pageNumber} />)
         }
         <div>
           <button style={{ marginRight: '6px' }} onClick={() => {setHtmlDump({ action: 'delete' })}}>
@@ -72,9 +60,12 @@ function Home() {
           </button>
         </div>
         <p>
-          Insert the HTML of a Trade page into the above and press submit.
+          Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
         </p>
-        <p style={{ color: '#999', pointerEvents: 'none' }}>Guide coming soon.</p>
+        <span style={{ color: '#999', pointerEvents: 'none' }}>Guide coming soon.</span>
+        <span style={{ color: '#999', pointerEvents: 'none' }}>Searching/filtering coming soon.</span>
+        <span style={{ color: '#999', pointerEvents: 'none' }}>Easier method than pasting HTML, coming soon.</span>
+        <span style={{ color: '#999', pointerEvents: 'none' }}>Clicking results for their pages & IDs, coming soon.</span>
       </div>
       <ResultsScreen inventoryHtml={htmlDumps} />
     </>

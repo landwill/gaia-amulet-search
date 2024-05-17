@@ -1,12 +1,12 @@
-import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
-import rareDiamondAmulet from '/amuletRareDiamond.png'
-import commonDiamondAmulet from '/amuletCommonDiamond.png'
-import legendaryCircleAmulet from '/amuletLegendaryCircle.png'
-import rareCircleAmulet from '/amuletRareCircle.png'
 import commonCircleAmulet from '/amuletCommonCircle.png'
-import legendarySquareAmulet from '/amuletLegendarySquare.png'
-import rareSquareAmulet from '/amuletRareSquare.png'
+import commonDiamondAmulet from '/amuletCommonDiamond.png'
 import commonSquareAmulet from '/amuletCommonSquare.png'
+import legendaryCircleAmulet from '/amuletLegendaryCircle.png'
+import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
+import legendarySquareAmulet from '/amuletLegendarySquare.png'
+import rareCircleAmulet from '/amuletRareCircle.png'
+import rareDiamondAmulet from '/amuletRareDiamond.png'
+import rareSquareAmulet from '/amuletRareSquare.png'
 import { Amulet, Rarity, Shape, Stat } from '../interfaces.ts'
 
 const parser = new DOMParser()
@@ -37,7 +37,6 @@ export function extractAmuletDetails(amuletImageElement: HTMLImageElement, page:
 
   const amuletSpecs = amuletImageElement.alt.match(/^\[Kindred] (Rare|Legendary)? ?(Diamond|Circle|Square) Amulet\n/)
   if (!amuletSpecs) {
-    console.log(amuletImageElement)
     throw new Error('Amulet rarity/shape not matched. See logs for more info.')
   } // todo show soulbound
   if (amuletSpecs.length < 3) throw new Error('Failed to find rarity/shape')
@@ -73,11 +72,27 @@ const extractAmuletsFromTab = (tab: Element, pageNumber: number): Amulet[] => {
   return amulets
 }
 
-export const extractAmuletsFromHtml = (html: string, pageNumber: number): Amulet[] => {
+function getPageNumber(parsedHtml: Document) {
+  const kindredPageUlElement = parsedHtml.getElementById('kindred_pg')
+  if (!kindredPageUlElement) throw new Error('Failed to identify the page number.')
+  for (const pageLi of kindredPageUlElement.children) {
+    if (!(pageLi instanceof HTMLLIElement)) continue
+    const aTags = pageLi.getElementsByTagName('a')
+    if (aTags.length === 1 && aTags[0].className === 'selected') {
+      const pageNumberString = aTags[0].innerText
+      return Number(pageNumberString)
+    }
+  }
+  throw new Error('Page number not found')
+}
+
+export const extractAmuletsFromHtml = (html: string): { amulets: Amulet[], pageNumber: number } => {
   if (html === '') throw new Error()
   const parsedHtml = parser.parseFromString(html, 'text/html')
   const mainInventories = parsedHtml.getElementsByClassName('main-inventory')
   if (mainInventories.length === 0) throw new Error('Failed to identify the inventory.')
+
+  const pageNumber = getPageNumber(parsedHtml)
 
   const amulets = []
   for (const inventory of mainInventories) {
@@ -89,7 +104,7 @@ export const extractAmuletsFromHtml = (html: string, pageNumber: number): Amulet
       }
     }
   }
-  return amulets
+  return { amulets, pageNumber }
 }
 
 export const amuletImageMap: Record<Shape, Record<Rarity, string>> = {

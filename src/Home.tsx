@@ -66,8 +66,8 @@ const findFirstMissingPositive = (nums: number[]): number => {
   return nums.length + 1
 }
 
-const isIndexedAction = (action: PageAction): action is SetPageNumber => {
-  return 'arrayIndex' in action;
+const isIndexedAction = (action: PageAction): action is SetPageNumber | SetPageHtml | DeletePage => {
+  return 'arrayIndex' in action
 }
 
 const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {

@@ -18,3 +18,11 @@ export interface Stat {
   statName: string
   bonus: number
 }
+
+export interface AmuletSummary {
+  amuletName: string | null
+  stats: Stat[]
+  ids: string[]
+}
+
+export type AmuletTuple = [string, AmuletSummary]

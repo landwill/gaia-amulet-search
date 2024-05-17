@@ -1,13 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Amulet, LocationState, Stat } from '../interfaces.ts'
+import { Amulet, AmuletSummary, AmuletTuple, LocationState, Stat } from '../interfaces.ts'
 import { extractAmuletsFromHtmlDumps } from './utils.ts'
-
-interface AmuletSummary {
-  amuletName: string | null
-  stats: Stat[]
-  ids: string[]
-}
 
 function stringifyStats(stats: Stat[]): string {
   return stats.map(s => `${s.statName}_${String(s.bonus)}`).join('|')
@@ -28,8 +22,6 @@ function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
 
   return amuletSummary
 }
-
-type AmuletTuple = [string, AmuletSummary]
 
 const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple): number => {
   const sumA = amuletA.stats.reduce((prev, curr) => prev + curr.bonus, 0)

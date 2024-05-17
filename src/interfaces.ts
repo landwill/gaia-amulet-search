@@ -8,9 +8,13 @@ export interface HtmlDumpInfo {
   deleted: boolean
 }
 
-export interface Amulet {
-  amuletName: string | null
+interface AmuletBaseInfo {
+  shape: Shape
+  rarity: Rarity
   stats: Stat[]
+}
+
+export interface Amulet extends AmuletBaseInfo {
   location: AmuletLocation
 }
 
@@ -24,10 +28,15 @@ export interface AmuletLocation {
   page: number
 }
 
-export interface AmuletSummary {
-  amuletName: string | null
-  stats: Stat[]
+export interface AmuletSummary extends AmuletBaseInfo {
   locations: AmuletLocation[]
 }
 
 export type AmuletTuple = [string, AmuletSummary]
+export type Shape = 'Square' | 'Diamond' | 'Circle'
+
+export enum Rarity {
+  Common,
+  Rare,
+  Legendary
+}

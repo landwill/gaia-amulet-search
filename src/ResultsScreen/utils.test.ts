@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Amulet, Stat } from '../interfaces.ts'
+import { Amulet, Rarity, Stat } from '../interfaces.ts'
 
 import { extractAmuletDetails, extractStats } from './utils.ts'
 
@@ -21,7 +21,8 @@ describe('extractAmuletDetails', () => {
     const id = '123.456'
     const pageNumber = 6
     const location = { id, page: pageNumber}
-    const amuletName = '[Kindred] Rare Square Amulet'
+    const rarity = Rarity.Rare
+    const shape = 'Square'
     const expectedStats: Stat[] = [{ statName: 'Damage', bonus: 7 }]
     const testAmuletImage = document.createElement('img')
     testAmuletImage.alt = `[Kindred] Rare Square Amulet\n+7% Damage\n`
@@ -29,6 +30,6 @@ describe('extractAmuletDetails', () => {
 
     const result = extractAmuletDetails(testAmuletImage, pageNumber)
 
-    expect(result).toStrictEqual({ amuletName, location, stats: expectedStats } satisfies Amulet)
+    expect(result).toStrictEqual({ rarity, shape, location, stats: expectedStats } satisfies Amulet)
   })
 })

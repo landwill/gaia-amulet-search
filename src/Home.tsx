@@ -66,7 +66,7 @@ const findFirstMissingPositive = (nums: number[]): number => {
   return nums.length + 1
 }
 
-const isIndexedAction = (action: any): action is SetPageNumber => {
+const isIndexedAction = (action: PageAction): action is SetPageNumber => {
   return 'arrayIndex' in action;
 }
 
@@ -84,7 +84,6 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
 
   if (newState[newState.length - 1].pageHtml != null) {
     const maxPageNumber = findFirstMissingPositive(newState.filter(d => !d.deleted).map(d => d.pageNumber))
-    console.log('Creating new page with pageNumber', maxPageNumber)
     newState.push({ pageNumber: maxPageNumber, pageHtml: null, deleted: false })
   }
   return newState
@@ -94,7 +93,6 @@ function Home() {
   const [htmlDumps, setHtmlDump] = useReducer(htmlDumpReducer, INITIAL_HTML_DUMPS_STATE)
 
   const navigate = useNavigate()
-  console.log(htmlDumps)
 
   return (
     <>

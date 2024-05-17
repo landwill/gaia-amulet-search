@@ -113,3 +113,14 @@ export const amuletImageMap: Record<Shape, Record<Rarity, string>> = {
 export const warnUser = (message: string) => {
   console.warn(message) // todo display in the UI
 }
+
+export const warnUserOfError = (error: unknown, prefixMessage: string | null = null) => {
+  const messageParts = []
+  if (prefixMessage) messageParts.push(prefixMessage)
+  if (typeof error === 'object' && error != null && 'message' in error && typeof error.message === 'string') {
+    messageParts.push(error.message)
+  } else {
+    messageParts.push('Cause unknown')
+  }
+  warnUser(messageParts.join(' '))
+}

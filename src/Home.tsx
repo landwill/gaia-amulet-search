@@ -4,7 +4,7 @@ import { useReducer } from 'react'
 import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
 import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml, SetPageNumber } from './interfaces.ts'
 import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
-import { extractAmuletsFromHtml, warnUser } from './ResultsScreen/utils.ts'
+import { extractAmuletsFromHtml, warnUserOfError } from './ResultsScreen/utils.ts'
 
 const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amulets: null, pageNumber: 1, deleted: false }]
 
@@ -33,10 +33,8 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
     try {
       const amulets = extractAmuletsFromHtml(pageHtml, state[arrayIndex].pageNumber)
       newState[arrayIndex] = { ...newState[arrayIndex], amulets }
-    } catch (error: any) {
-      const messageParts = ['Failed to parse the pasted HTML.']
-      messageParts.push('message' in error ? error.message : 'Cause unknown.')
-      warnUser(messageParts.join(' '))
+    } catch (error: unknown) {
+      warnUserOfError(error, 'Failed to parse the pasted HTML.')
     }
   } else {
     const { arrayIndex, ...rest } = action

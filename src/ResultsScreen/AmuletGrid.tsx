@@ -26,7 +26,7 @@ export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSumm
       amuletNameParts.push('Amulet')
       const amuletName = amuletNameParts.join(' ')
 
-      return <div style={{ border: '1px solid black', padding: '12px', margin: '6px', borderRadius: '12px', borderColor: 'lightgrey', width: '160px' }}>
+      return <div style={{ border: '1px solid black', padding: '12px', margin: '6px', borderRadius: '12px', borderColor: 'lightgrey', width: '180px' }}>
         <AmuletImage rarity={amulet.rarity} shape={amulet.shape} /><br />
         <span style={{ fontWeight: 'bold' }}>{amuletName}</span><br />
         <div style={{ marginTop: 6, marginBottom: 6 }}>

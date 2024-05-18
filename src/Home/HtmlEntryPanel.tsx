@@ -11,7 +11,6 @@ export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
 
   return <div style={{ display: 'flex', marginBottom: '0.75rem' }}>
     <Input value={pageNumber !== 0 ? `Page ${String(pageNumber)} added successfully` : 'Paste HTML here'}
-           readOnly
            disabled={isHtmlPopulated}
            onPaste={e => {
              e.preventDefault()
@@ -19,6 +18,7 @@ export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
              const pasted = e.clipboardData.getData('text/plain')
              dispatcher({ arrayIndex, pageHtml: pasted })
            }}
+           onChange={() => {}} // mute the console warning. We don't want readOnly because it prevents right-click pasting in some(?) browsers
            style={{ width: '12rem', marginRight: 8 }}
     />
     <Button variant='danger' disabled={!isHtmlPopulated} onClick={e => {

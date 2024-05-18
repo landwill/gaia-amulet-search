@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Amulet, AmuletSummary, HtmlDumpInfo, Rarity } from '../interfaces.ts'
 import { AmuletGrid, stringifyStats } from './AmuletGrid.tsx'
-import { SearchPanel, SearchState } from './SearchPanel.tsx'
+import { SearchPanel } from './SearchPanel.tsx'
+import { SearchState } from './StatSelector.tsx'
+
+const NUM_AMULET_FILTERS = 3
 
 function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
   const amuletSummary = new Map<string, AmuletSummary>()
@@ -23,6 +26,14 @@ const amuletSatisfiesFilter = (amulet: AmuletSummary, searchState: SearchState):
   if (searchState.rarities.length !== 0 && !searchState.rarities.includes(Rarity[amulet.rarity])) return false
   // noinspection RedundantIfStatementJS
   if (searchState.shape != null && amulet.shape != searchState.shape) return false
+  for (let i = 0; i < NUM_AMULET_FILTERS; i++) {
+    if (searchState.stats[i].amount !== '') {
+      const requiredStat = searchState.stats[i]
+      if (requiredStat.amount === '') throw new Error('Assertion considering the above if-clause')
+      const currentStat = amulet.stats.find(s => s.statName === requiredStat.stat)
+      if (currentStat == undefined || currentStat.bonus < requiredStat.amount) return false
+    }
+  }
 
   return true
 }
@@ -36,7 +47,7 @@ function mapAndFilterAmuletTuples(inventoryHtml: HtmlDumpInfo[]) {
 }
 
 export default function ResultsScreen({ inventoryHtml }: { inventoryHtml: HtmlDumpInfo[] | null }) {
-  const [searchState, setSearchState] = useState<SearchState>({ rarities: [], shape: null })
+  const [searchState, setSearchState] = useState<SearchState>({ rarities: [], shape: null, stats: [{amount: '', stat: 'Accuracy'},{amount: '', stat: 'Accuracy'},{amount: '', stat: 'Accuracy'}] })
 
   if (inventoryHtml == null || inventoryHtml.length === 0) return <div>No inventory data found.</div>
 
@@ -44,7 +55,7 @@ export default function ResultsScreen({ inventoryHtml }: { inventoryHtml: HtmlDu
 
   return <div>
     <SearchPanel searchState={searchState} setSearchState={setSearchState} />
-    <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '1000px', flexWrap: 'wrap' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '1000px', flexWrap: 'wrap', justifyContent: 'center' }}>
       <AmuletGrid amuletTuples={amuletTuples.filter(([_, amulet]) => amuletSatisfiesFilter(amulet, searchState))} />
     </div>
   </div>

@@ -43,7 +43,6 @@ const notices = [
   'Guide coming soon.',
   'Easier method than pasting HTML, coming soon.',
   'Clicking results for their pages & IDs, coming soon.',
-  'Searching/filtering currently being enhanced.'
 ]
 
 function Home() {
@@ -67,7 +66,7 @@ function Home() {
         <p style={{ marginBottom: '32px' }}>
           Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
         </p>
-        {notices.map(notice => <span style={{ pointerEvents: 'none', color: '#9CA3AF' }}>{notice}</span>)}
+        {notices.map(notice => <span key={notice} style={{ pointerEvents: 'none', color: '#9CA3AF' }}>{notice}</span>)}
       </div>
       <ResultsScreen inventoryHtml={htmlDumps} />
     </>

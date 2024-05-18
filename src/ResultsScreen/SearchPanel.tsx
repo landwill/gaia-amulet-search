@@ -2,7 +2,7 @@ import { MultiSelect, Select } from '@mantine/core'
 import React from 'react'
 
 export interface SearchState {
-  rarities: string[] // todo try to improve typing
+  rarities: string[]
   shape: string | null
 }
 
@@ -18,14 +18,14 @@ export const SearchPanel = ({ searchState, setSearchState }: {
                    clearable
                    style={{ width: '260px', marginBottom: 8 }}
                    value={searchState.rarities}
-                   onChange={newVal => setSearchState(prev => ({ ...prev, rarities: newVal }))} />
+                   onChange={newVal => {setSearchState(prev => ({ ...prev, rarities: newVal }))}} />
       <Select label='Shape'
               placeholder='Filter by shape'
               data={['Square', 'Diamond', 'Circle']}
               clearable
               style={{ width: '200px', marginBottom: 32 }}
               value={searchState.shape}
-              onChange={newVal => setSearchState(prev => ({ ...prev, shape: newVal }))}
+              onChange={newVal => {setSearchState(prev => ({ ...prev, shape: newVal }))}}
       />
     </div>
   </>

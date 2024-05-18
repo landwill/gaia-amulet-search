@@ -1,0 +1,6 @@
+.root {
+    &[data-variant='danger']:not(:disabled) {
+        background-color: var(--mantine-color-red-7);
+        color: var(--mantine-color-red-0);
+    }
+}

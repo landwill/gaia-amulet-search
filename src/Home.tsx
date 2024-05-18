@@ -1,6 +1,6 @@
 import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
 import './App.css'
-import { Button } from '@mantine/core'
+import { Button, Title } from '@mantine/core'
 import { useReducer } from 'react'
 import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
 import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml } from './interfaces.ts'
@@ -54,7 +54,7 @@ function Home() {
       <img src={legendaryDiamondAmulet} alt='Legendary diamond amulet icon' className='logo'
            style={{ display: 'inline', height: '4rem', marginBottom: '2rem' }} />
       <div style={{ marginBottom: '2rem', alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
-        <h1 style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '3rem', lineHeight: 1 }}>Amulet Search</h1>
+        <Title order={1} style={{ fontSize: '3rem', marginBottom: '3rem', lineHeight: 1 }}>Amulet Search</Title>
         <div style={{ marginBottom: 32 }}>
           {
             htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>

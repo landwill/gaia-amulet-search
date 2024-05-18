@@ -9,5 +9,6 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom'
-  }
+  },
+  base: '/gaia-amulet-search/'
 })

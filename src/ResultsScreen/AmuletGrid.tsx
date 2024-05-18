@@ -1,5 +1,13 @@
-import { AmuletSummary, AmuletTuple, Rarity } from '../interfaces.ts'
+import { AmuletSummary, AmuletTuple, Rarity, Stat } from '../interfaces.ts'
 import { AmuletImage } from './AmuletImage.tsx'
+
+export function stringifyStats(stats: Stat[]): string {
+  return stats.map(stringifyStat).join('|')
+}
+
+export function stringifyStat(s: Stat): string {
+  return `${s.statName}_${String(s.bonus)}`
+}
 
 const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple): number => {
   if (amuletA.rarity !== amuletB.rarity) return amuletA.rarity - amuletB.rarity
@@ -11,22 +19,21 @@ const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple
 
 export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSummary][] }) => {
   return amuletTuples.sort(largestStatSumSorter).reverse()
-    .map(([id, amulet]) => {
+    .map(([, amulet]) => {
       const amuletNameParts = []
       if (amulet.rarity) amuletNameParts.push(Rarity[amulet.rarity])
       amuletNameParts.push(amulet.shape)
       amuletNameParts.push('Amulet')
       const amuletName = amuletNameParts.join(' ')
 
-      return <div key={id}
-                  style={{ border: '1px solid black', padding: '12px', margin: '6px', borderRadius: '12px', borderColor: 'lightgrey', width: '160px' }}>
+      return <div style={{ border: '1px solid black', padding: '12px', margin: '6px', borderRadius: '12px', borderColor: 'lightgrey', width: '160px' }}>
         <AmuletImage rarity={amulet.rarity} shape={amulet.shape} /><br />
         <span style={{ fontWeight: 'bold' }}>{amuletName}</span><br />
         <div style={{ marginTop: 6, marginBottom: 6 }}>
           {
             amulet.stats.length
               ? amulet.stats.map(stat => <span style={{ display: 'inline-block' }}
-                                               key={id}>{`+${String(stat.bonus)}% ${stat.statName}`}</span>)
+                                               key={stringifyStat(stat)}>{`+${String(stat.bonus)}% ${stat.statName}`}</span>)
               : 'Experience vs [...]'
           }</div>
         {`Count: ${String(amulet.locations.length)}`}<br />

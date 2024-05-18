@@ -9,7 +9,7 @@ export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
   const isHtmlPopulated = pageNumber !== 0
 
   return <div style={{ display: 'flex', marginBottom: 12 }}>
-    <input value={pageNumber !== 0 ? `Page ${pageNumber} added successfully` : 'Paste HTML here'}
+    <input value={pageNumber !== 0 ? `Page ${String(pageNumber)} added successfully` : 'Paste HTML here'}
            readOnly
            disabled={isHtmlPopulated}
            onPaste={e => {

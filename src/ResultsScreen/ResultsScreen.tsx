@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Amulet, AmuletSummary, HtmlDumpInfo } from '../interfaces.ts'
+import { Amulet, AmuletSummary, HtmlDumpInfo, Rarity } from '../interfaces.ts'
 import { AmuletGrid, stringifyStats } from './AmuletGrid.tsx'
 import { SearchPanel, SearchState } from './SearchPanel.tsx'
 
@@ -20,9 +20,9 @@ function summarizeAmulets(amulets: Amulet[]): Map<string, AmuletSummary> {
 }
 
 const amuletSatisfiesFilter = (amulet: AmuletSummary, searchState: SearchState): boolean => {
-  if (searchState.rarity !== '' && amulet.rarity != searchState.rarity) return false
+  if (searchState.rarities.length !== 0 && !searchState.rarities.includes(Rarity[amulet.rarity])) return false
   // noinspection RedundantIfStatementJS
-  if (searchState.shape !== '' && amulet.shape != searchState.shape) return false
+  if (searchState.shape != null && amulet.shape != searchState.shape) return false
 
   return true
 }
@@ -36,17 +36,17 @@ function mapAndFilterAmuletTuples(inventoryHtml: HtmlDumpInfo[]) {
 }
 
 export default function ResultsScreen({ inventoryHtml }: { inventoryHtml: HtmlDumpInfo[] | null }) {
-  const [searchState, setSearchState] = useState<SearchState>({ rarity: '', shape: '' })
+  const [searchState, setSearchState] = useState<SearchState>({ rarities: [], shape: null })
 
   if (inventoryHtml == null || inventoryHtml.length === 0) return <div>No inventory data found.</div>
 
   const amuletTuples = mapAndFilterAmuletTuples(inventoryHtml)
 
-  return <>
+  return <div>
     <SearchPanel searchState={searchState} setSearchState={setSearchState} />
     <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '1000px', flexWrap: 'wrap' }}>
       <AmuletGrid amuletTuples={amuletTuples.filter(([_, amulet]) => amuletSatisfiesFilter(amulet, searchState))} />
     </div>
-  </>
+  </div>
 }
 

@@ -1,5 +1,6 @@
 import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
 import './App.css'
+import { Button } from '@mantine/core'
 import { useReducer } from 'react'
 import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
 import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml } from './interfaces.ts'
@@ -38,34 +39,35 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
   return newState
 }
 
+const notices = [
+  'Guide coming soon.',
+  'Easier method than pasting HTML, coming soon.',
+  'Clicking results for their pages & IDs, coming soon.',
+  'Searching/filtering currently being enhanced.'
+]
+
 function Home() {
   const [htmlDumps, setHtmlDump] = useReducer(htmlDumpReducer, INITIAL_HTML_DUMPS_STATE)
 
   return (
     <>
-      <div>
-        <img src={legendaryDiamondAmulet} className='logo' alt='Legendary diamond amulet icon' height='60px' />
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
-        <h1>Amulet Search</h1>
-        {
-          htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>
-            htmlDumpInfo.deleted
-              ? undefined
-              : <HtmlEntryPanel key={index} dispatcher={setHtmlDump} arrayIndex={index} pageNumber={htmlDumpInfo.pageNumber} />)
-        }
-        <div>
-          <button style={{ marginRight: '6px' }} onClick={() => {setHtmlDump({ action: 'delete' })}}>
-            Clear
-          </button>
+      <img src={legendaryDiamondAmulet} alt='Legendary diamond amulet icon' className='logo'
+           style={{ display: 'inline', height: '4rem', marginBottom: '2rem' }} />
+      <div style={{ marginBottom: '2rem', alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
+        <h1 style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '3rem', lineHeight: 1 }}>Amulet Search</h1>
+        <div style={{ marginBottom: 32 }}>
+          {
+            htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>
+              htmlDumpInfo.deleted
+                ? undefined
+                : <HtmlEntryPanel key={index} dispatcher={setHtmlDump} arrayIndex={index} pageNumber={htmlDumpInfo.pageNumber} />)
+          }
+          <Button variant='danger' onClick={() => {setHtmlDump({ action: 'delete' })}}>Clear all</Button>
         </div>
-        <p>
+        <p style={{ marginBottom: '32px' }}>
           Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
         </p>
-        <span style={{ color: '#999', pointerEvents: 'none' }}>Guide coming soon.</span>
-        <span style={{ color: '#999', pointerEvents: 'none' }}>Searching/filtering coming soon.</span>
-        <span style={{ color: '#999', pointerEvents: 'none' }}>Easier method than pasting HTML, coming soon.</span>
-        <span style={{ color: '#999', pointerEvents: 'none' }}>Clicking results for their pages & IDs, coming soon.</span>
+        {notices.map(notice => <span style={{ pointerEvents: 'none', color: '#9CA3AF' }}>{notice}</span>)}
       </div>
       <ResultsScreen inventoryHtml={htmlDumps} />
     </>

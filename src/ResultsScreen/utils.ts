@@ -38,7 +38,7 @@ export function extractAmuletDetails(amuletImageElement: HTMLImageElement, page:
   const amuletSpecs = amuletImageElement.alt.match(/^\[Kindred] (Rare|Legendary)? ?(Diamond|Circle|Square) Amulet\n/)
   if (!amuletSpecs) {
     throw new Error('Amulet rarity/shape not matched. See logs for more info.')
-  } // todo show soulbound
+  } // todo indicate that an amulet is equipped (i.e. soulbound)
   if (amuletSpecs.length < 3) throw new Error('Failed to find rarity/shape')
 
   // false positive; index 1 of a RegExpMatchArray can indeed be null.

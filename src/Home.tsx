@@ -41,8 +41,7 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
 
 const notices = [
   'Guide coming soon.',
-  'Easier method than pasting HTML, coming soon.',
-  'Clicking results for their pages & IDs, coming soon.',
+  'Easier method than pasting HTML, coming soon™️.',
 ]
 
 function Home() {
@@ -53,7 +52,7 @@ function Home() {
       <img src={legendaryDiamondAmulet} alt='Legendary diamond amulet icon' className='logo'
            style={{ display: 'inline', height: '4rem', marginBottom: '2rem' }} />
       <div style={{ marginBottom: '2rem', alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
-        <Title order={1} style={{ fontSize: '3rem', marginBottom: '3rem', lineHeight: 1 }}>Amulet Search</Title>
+        <Title order={1} style={{ fontSize: '3rem', marginBottom: '3rem', lineHeight: 1 }} opacity='0.8'>Amulet Search</Title>
         <div style={{ marginBottom: 32 }}>
           {
             htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>

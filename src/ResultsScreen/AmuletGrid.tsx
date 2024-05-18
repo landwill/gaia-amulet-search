@@ -10,6 +10,15 @@ const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple
 }
 
 export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSummary][] }) => {
-  return amuletTuples.sort(largestStatSumSorter).reverse()
-    .map(([, amulet]) => <AmuletCard amulet={amulet} />)
+  return <div style={{ display: 'grid', justifyContent: 'center' }}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'row',
+      maxWidth: '1000px',
+      flexWrap: 'wrap',
+      justifyContent: 'center'
+    }}>{amuletTuples.sort(largestStatSumSorter).reverse()
+      .map(([id, amulet]) => <AmuletCard key={id} amulet={amulet} />)}
+    </div>
+  </div>
 }

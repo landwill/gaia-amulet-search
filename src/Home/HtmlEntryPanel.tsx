@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Button, Input } from '@mantine/core'
 import React from 'react'
 import { PageAction } from '../interfaces.ts'

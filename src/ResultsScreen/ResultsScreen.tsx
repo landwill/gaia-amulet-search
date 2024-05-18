@@ -48,17 +48,21 @@ function mapAndFilterAmuletTuples(inventoryHtml: HtmlDumpInfo[]) {
 }
 
 export default function ResultsScreen({ inventoryHtml }: { inventoryHtml: HtmlDumpInfo[] | null }) {
-  const [searchState, setSearchState] = useState<SearchState>({ rarities: [], shape: null, stats: [{amount: '', stat: 'Accuracy'},{amount: '', stat: 'Accuracy'},{amount: '', stat: 'Accuracy'}] })
+  const [searchState, setSearchState] = useState<SearchState>({
+    rarities: [],
+    shape: null,
+    stats: [{ amount: '', stat: 'Accuracy' }, { amount: '', stat: 'Accuracy' }, { amount: '', stat: 'Accuracy' }]
+  })
 
   if (inventoryHtml == null || inventoryHtml.length === 0) return <div>No inventory data found.</div>
 
   const amuletTuples = mapAndFilterAmuletTuples(inventoryHtml)
 
-  return <div>
-    <SearchPanel searchState={searchState} setSearchState={setSearchState} />
-    <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '1000px', flexWrap: 'wrap', justifyContent: 'center' }}>
+  return <>
+    <div>
+      <SearchPanel searchState={searchState} setSearchState={setSearchState} />
       <AmuletGrid amuletTuples={amuletTuples.filter(([, amulet]) => amuletSatisfiesFilter(amulet, searchState))} />
     </div>
-  </div>
+  </>
 }
 

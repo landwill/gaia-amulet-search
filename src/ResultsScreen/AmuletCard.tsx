@@ -1,14 +1,22 @@
 import { Card, Text } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { AmuletSummary, Rarity } from '../interfaces.ts'
 import { AmuletImage } from './AmuletImage.tsx'
+import { AmuletModal } from './AmuletModal.tsx'
 import { stringifyStat, stringifyStats } from './utils.ts'
 
-export const AmuletCard = ({ amulet }: { amulet: AmuletSummary }) => {
+function getAmuletName(amulet: AmuletSummary) {
   const amuletNameParts = []
   if (amulet.rarity) amuletNameParts.push(Rarity[amulet.rarity])
   amuletNameParts.push(amulet.shape)
   amuletNameParts.push('Amulet')
-  const amuletName = amuletNameParts.join(' ')
+  return amuletNameParts.join(' ')
+}
+
+export const AmuletCard = ({ amulet }: { amulet: AmuletSummary }) => {
+  const [opened, { open, close }] = useDisclosure(false)
+
+  const amuletName = getAmuletName(amulet)
 
   const stats = amulet.stats.length
     ? amulet.stats.map(stat =>
@@ -18,25 +26,25 @@ export const AmuletCard = ({ amulet }: { amulet: AmuletSummary }) => {
       </div>)
     : <Text size='xs'>Experience vs ...</Text>
 
-  return <Card withBorder key={`${amuletName}_${stringifyStats(amulet.stats)}`} style={{ margin: '6px', width: '180px' }}>
-    <Card.Section pt='md'>
-      <AmuletImage rarity={amulet.rarity} shape={amulet.shape} />
-    </Card.Section>
-    <Card.Section pl='md' pr='md'>
-      <Text style={{ fontSize: 'medium', fontWeight: 700 }}>{amuletName}</Text>
-    </Card.Section>
-    <Card.Section mb='auto'>
-      <div style={{
-        marginTop: 6,
-        paddingTop: 6,
-        borderTop: '1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
-      }}>
-        {stats}
-      </div>
-    </Card.Section>
-    <Text size='sm' c='dimmed' mt='sm'>Quantity: {String(amulet.locations.length)}</Text>
-    {/*{amulet.locations.slice(0, 5).map(amuletLocation => <ul style={{ marginTop: 6, marginBottom: 6 }} key={amuletLocation.id} onClick={() => {
-            navigator.clipboard.writeText(amuletLocation.id).catch((r: unknown) => {console.error(r)})
-          }}>...{amuletLocation.id.substring(amuletLocation.id.length - 10)} (Page {amuletLocation.page})</ul>)}*/}
-  </Card>
+  return <>
+    <AmuletModal opened={opened} onClose={close} title={amuletName} stats={stats} amulet={amulet} />
+    <Card withBorder key={`${amuletName}_${stringifyStats(amulet.stats)}`} style={{ margin: '6px', width: '180px' }} onClick={open}>
+      <Card.Section pt='md'>
+        <AmuletImage rarity={amulet.rarity} shape={amulet.shape} />
+      </Card.Section>
+      <Card.Section pl='md' pr='md'>
+        <Text style={{ fontSize: 'medium', fontWeight: 700 }}>{amuletName}</Text>
+      </Card.Section>
+      <Card.Section mb='auto'>
+        <div style={{
+          marginTop: 6,
+          paddingTop: 6,
+          borderTop: '1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
+        }}>
+          {stats}
+        </div>
+      </Card.Section>
+      <Text size='sm' c='dimmed' mt='sm'>Quantity: {String(amulet.locations.length)}</Text>
+    </Card>
+  </>
 }

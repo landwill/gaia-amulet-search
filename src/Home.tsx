@@ -53,7 +53,7 @@ function Home() {
            style={{ display: 'inline', height: '4rem', marginBottom: '2rem' }} />
       <div style={{ marginBottom: '2rem', alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
         <Title order={1} style={{ fontSize: '3rem', marginBottom: '3rem', lineHeight: 1 }} opacity='0.8'>Amulet Search</Title>
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 12 }}>
           {
             htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>
               htmlDumpInfo.deleted
@@ -62,7 +62,7 @@ function Home() {
           }
           <Button variant='danger' onClick={() => {setHtmlDump({ action: 'delete' })}}>Clear all</Button>
         </div>
-        <p style={{ marginBottom: '32px' }}>
+        <p style={{ marginBottom: '12px' }}>
           Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
         </p>
         {notices.map(notice => <span key={notice} style={{ pointerEvents: 'none', color: '#9CA3AF' }}>{notice}</span>)}

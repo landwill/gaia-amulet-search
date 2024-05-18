@@ -24,7 +24,7 @@ export const SearchPanel = ({ searchState, setSearchState }: {
                    value={searchState.rarities}
                    onChange={newVal => {setSearchState(prev => ({ ...prev, rarities: newVal }))}} />
     </div>
-    <div style={{ marginBottom: 32 }}>
+    <div style={{ marginBottom: 12 }}>
       <StatSelector statNumber={1} values={searchState.stats[0]} setSearchState={setSearchState} />
       <StatSelector statNumber={2} values={searchState.stats[1]} setSearchState={setSearchState} />
       <StatSelector statNumber={3} values={searchState.stats[2]} setSearchState={setSearchState} />

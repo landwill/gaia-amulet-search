@@ -5,7 +5,7 @@ resulting in a clean and filterable collection of results, where such functional
 
 ## How to use
 These steps may take 2 minutes the first time, and 30s once you get used to the process.
-1. visit the URL (link coming soon)
+1. visit [the site](https://landwill.github.io/gaia-amulet-search/)
 2. in another tab, open a Gaia Online [trade](https://www.gaiaonline.com/gaia/bank.php) with any user
 3. click the Kindred tab
 4. navigate to whichever page number you wish to load first (or stay on Page #1)

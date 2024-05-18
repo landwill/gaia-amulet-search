@@ -1,6 +1,7 @@
 import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
 import './App.css'
-import { Button, Title } from '@mantine/core'
+import { Button, Text, Title } from '@mantine/core'
+import { ExternalLinkIcon } from 'lucide-react'
 import { useReducer } from 'react'
 import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
 import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml } from './interfaces.ts'
@@ -40,12 +41,13 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
 }
 
 const notices = [
-  'Guide coming soon.',
-  'Easier method than pasting HTML, coming soon™️.',
+  'Shareable (\'ghosting\') links, coming soon™️',
 ]
 
 function Home() {
   const [htmlDumps, setHtmlDump] = useReducer(htmlDumpReducer, INITIAL_HTML_DUMPS_STATE)
+
+  const hasSomethingToClear = htmlDumps.filter(d => !d.deleted && d.amulets != null).length > 0
 
   return (
     <>
@@ -60,11 +62,17 @@ function Home() {
                 ? undefined
                 : <HtmlEntryPanel key={index} dispatcher={setHtmlDump} arrayIndex={index} pageNumber={htmlDumpInfo.pageNumber} />)
           }
-          <Button variant='danger' onClick={() => {setHtmlDump({ action: 'delete' })}}>Clear all</Button>
+          <Button variant='danger' onClick={() => {setHtmlDump({ action: 'delete' })}} disabled={!hasSomethingToClear}>Clear all</Button>
         </div>
-        <p style={{ marginBottom: '12px' }}>
+        <Text mt={12} mb={12}>
           Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
-        </p>
+        </Text>
+        <Button component='a'
+                href='https://github.com/landwill/gaia-amulet-search#readme'
+                target='_blank'
+                variant='outline'
+                rightSection={<ExternalLinkIcon size='20' />}
+                mb={12}>Click here for a guide</Button>
         {notices.map(notice => <span key={notice} style={{ pointerEvents: 'none', color: '#9CA3AF' }}>{notice}</span>)}
       </div>
       <ResultsScreen inventoryHtml={htmlDumps} />

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Amulet, AmuletSummary, HtmlDumpInfo, Rarity } from '../interfaces.ts'
-import { AmuletGrid, stringifyStats } from './AmuletGrid.tsx'
+import { AmuletGrid } from './AmuletGrid.tsx'
 import { SearchPanel } from './SearchPanel.tsx'
 import { SearchState } from './StatSelector.tsx'
+import { stringifyStats } from './utils.ts'
 
 const NUM_AMULET_FILTERS = 3
 
@@ -56,7 +57,7 @@ export default function ResultsScreen({ inventoryHtml }: { inventoryHtml: HtmlDu
   return <div>
     <SearchPanel searchState={searchState} setSearchState={setSearchState} />
     <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '1000px', flexWrap: 'wrap', justifyContent: 'center' }}>
-      <AmuletGrid amuletTuples={amuletTuples.filter(([_, amulet]) => amuletSatisfiesFilter(amulet, searchState))} />
+      <AmuletGrid amuletTuples={amuletTuples.filter(([, amulet]) => amuletSatisfiesFilter(amulet, searchState))} />
     </div>
   </div>
 }

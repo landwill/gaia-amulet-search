@@ -139,3 +139,11 @@ export const warnUserOfError = (error: unknown, prefixMessage: string | null = n
   }
   warnUser(messageParts.join(' '))
 }
+
+export function stringifyStats(stats: Stat[]): string {
+  return stats.map(stringifyStat).join('|')
+}
+
+export function stringifyStat(s: Stat): string {
+  return `${s.statName}_${String(s.bonus)}`
+}

@@ -48,7 +48,7 @@ export const StatSelector = ({ statNumber, values, setSearchState }: {
 }) => {
   const { amount, stat } = values
 
-  const label = statNumber != null ? `Stat ${statNumber}` : 'Stat'
+  const label = `Stat ${String(statNumber)}`
   const select = <NativeSelect data={statNames}
                                rightSectionWidth={28}
                                style={{ width: '100%' }}
@@ -64,5 +64,5 @@ export const StatSelector = ({ statNumber, values, setSearchState }: {
                       rightSectionWidth={140}
                       style={{ marginBottom: 8, width: 280 }}
                       value={amount}
-                      onChange={newVal => updateStatAmountByIndex(setSearchState, statNumber - 1, newVal)} />
+                      onChange={newVal => { updateStatAmountByIndex(setSearchState, statNumber - 1, newVal); }} />
 }

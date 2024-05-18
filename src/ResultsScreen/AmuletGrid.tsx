@@ -1,13 +1,6 @@
-import { AmuletSummary, AmuletTuple, Rarity, Stat } from '../interfaces.ts'
+import { AmuletSummary, AmuletTuple, Rarity } from '../interfaces.ts'
 import { AmuletImage } from './AmuletImage.tsx'
-
-export function stringifyStats(stats: Stat[]): string {
-  return stats.map(stringifyStat).join('|')
-}
-
-export function stringifyStat(s: Stat): string {
-  return `${s.statName}_${String(s.bonus)}`
-}
+import { stringifyStat, stringifyStats } from './utils.ts'
 
 const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple): number => {
   if (amuletA.rarity !== amuletB.rarity) return amuletA.rarity - amuletB.rarity
@@ -26,7 +19,7 @@ export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSumm
       amuletNameParts.push('Amulet')
       const amuletName = amuletNameParts.join(' ')
 
-      return <div style={{ border: '1px solid black', padding: '12px', margin: '6px', borderRadius: '12px', borderColor: 'lightgrey', width: '180px' }}>
+      return <div key={`${amuletName}_${stringifyStats(amulet.stats)}`} style={{ border: '1px solid black', padding: '12px', margin: '6px', borderRadius: '12px', borderColor: 'lightgrey', width: '180px' }}>
         <AmuletImage rarity={amulet.rarity} shape={amulet.shape} /><br />
         <span style={{ fontWeight: 'bold' }}>{amuletName}</span><br />
         <div style={{ marginTop: 6, marginBottom: 6 }}>

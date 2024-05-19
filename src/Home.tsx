@@ -27,7 +27,7 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
       const { amulets, pageNumber } = extractAmuletsFromHtml(pageHtml)
       newState[arrayIndex] = { ...newState[arrayIndex], amulets, pageNumber }
     } catch (error: unknown) {
-      warnUserOfError(error, 'Failed to parse the pasted HTML.')
+      warnUserOfError(error, 'paste-error', 'This typically means incorrect/invalid HTML was pasted.')
     }
   } else {
     const { arrayIndex, ...rest } = action

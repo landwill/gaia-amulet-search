@@ -7,6 +7,8 @@ import legendarySquareAmulet from '/amuletLegendarySquare.png'
 import rareCircleAmulet from '/amuletRareCircle.png'
 import rareDiamondAmulet from '/amuletRareDiamond.png'
 import rareSquareAmulet from '/amuletRareSquare.png'
+import { notifications } from '@mantine/notifications'
+import React from 'react'
 import { Amulet, Rarity, Shape, Stat } from '../interfaces.ts'
 
 const parser = new DOMParser()
@@ -125,19 +127,25 @@ export const amuletImageMap: Record<Shape, Record<Rarity, string>> = {
   }
 }
 
-export const warnUser = (message: string) => {
-  console.warn(message) // todo display in the UI
+export const warnUser = (message: string, id: string, title: React.ReactNode = 'Warning') => {
+  notifications.show({
+    id,
+    color: 'orange',
+    title,
+    message
+  })
+  console.warn(message)
 }
 
-export const warnUserOfError = (error: unknown, prefixMessage: string | null = null) => {
+export const warnUserOfError = (error: unknown, id: string, suffixMessage: string | null = null) => {
   const messageParts = []
-  if (prefixMessage) messageParts.push(prefixMessage)
   if (typeof error === 'object' && error != null && 'message' in error && typeof error.message === 'string') {
     messageParts.push(error.message)
   } else {
     messageParts.push('Cause unknown')
   }
-  warnUser(messageParts.join(' '))
+  if (suffixMessage) messageParts.push(suffixMessage)
+  warnUser(messageParts.join(' '), id)
 }
 
 export function stringifyStats(stats: Stat[]): string {

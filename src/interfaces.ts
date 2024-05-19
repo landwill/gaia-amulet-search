@@ -41,16 +41,17 @@ interface HtmlDumpActionBase {
   arrayIndex: number
 }
 
-export interface SetPageHtml extends HtmlDumpActionBase {
-  pageHtml: string
+export interface SetAmuletsForPage extends HtmlDumpActionBase {
+  amulets: Amulet[]
+  pageNumber: number
 }
 
 export interface DeletePage extends HtmlDumpActionBase {
   deleted: true
 }
 
-interface DeleteDumps {
+interface ClearAllDumps {
   action: 'delete'
 }
 
-export type PageAction = SetPageHtml | DeletePage | DeleteDumps
+export type PageAction = SetAmuletsForPage | DeletePage | ClearAllDumps

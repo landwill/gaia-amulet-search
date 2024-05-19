@@ -4,13 +4,12 @@ import { Button, Text, Title } from '@mantine/core'
 import { ExternalLinkIcon } from 'lucide-react'
 import { useReducer } from 'react'
 import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
-import { DeletePage, HtmlDumpInfo, PageAction, SetPageHtml } from './interfaces.ts'
+import { DeletePage, HtmlDumpInfo, PageAction, SetAmuletsForPage } from './interfaces.ts'
 import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
-import { extractAmuletsFromHtml, warnUserOfError } from './ResultsScreen/utils.ts'
 
 const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amulets: null, deleted: false, pageNumber: 0 }]
 
-const isIndexedAction = (action: PageAction): action is SetPageHtml | DeletePage => {
+const isIndexedAction = (action: PageAction): action is SetAmuletsForPage | DeletePage => {
   return 'arrayIndex' in action
 }
 
@@ -21,14 +20,9 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
   if (!isIndexedAction(action)) throw new Error('Bug; failed to return despite not being an indexed action.')
 
   const newState = [...state]
-  if ('pageHtml' in action) {
-    const { arrayIndex, pageHtml } = action
-    try {
-      const { amulets, pageNumber } = extractAmuletsFromHtml(pageHtml)
-      newState[arrayIndex] = { ...newState[arrayIndex], amulets, pageNumber }
-    } catch (error: unknown) {
-      warnUserOfError(error, 'paste-error', 'This typically means incorrect/invalid HTML was pasted.')
-    }
+  if ('pageNumber' in action && 'amulets' in action) {
+    const { arrayIndex, pageNumber, amulets } = action
+    newState[arrayIndex] = { ...newState[arrayIndex], amulets, pageNumber }
   } else {
     const { arrayIndex, ...rest } = action
     newState[arrayIndex] = { ...newState[arrayIndex], ...rest }
@@ -41,7 +35,7 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
 }
 
 const notices = [
-  'Shareable (\'ghosting\') links, coming soon™️',
+  'Shareable (\'ghosting\') links, coming soon™️'
 ]
 
 function Home() {

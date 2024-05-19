@@ -17,7 +17,8 @@ These steps may take 2 minutes the first time, and 30s once you get used to the 
 9. if you need to load multiple pages, repeat steps 4 - 8 with different pages. A new text box will appear in which you can paste additional pages' HTML.
 
 The results should be immediately displayed, and you can now start searching / filtering!
-<img src="readme/img_1.png" height="400"/>
+
+<img src="readme/results.png" height="400"/>
 
 ## I've found a nice amulet... but how can I identify it in the trade window?
 1. In the Amulet Search (this tool), click the amulet you wish to find in trade.

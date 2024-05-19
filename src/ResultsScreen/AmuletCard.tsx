@@ -28,7 +28,7 @@ export const AmuletCard = ({ amulet }: { amulet: AmuletSummary }) => {
 
   return <>
     <AmuletModal opened={opened} onClose={close} title={amuletName} stats={stats} amulet={amulet} />
-    <Card withBorder key={`${amuletName}_${stringifyStats(amulet.stats)}`} style={{ margin: '6px', width: '180px' }} onClick={open}>
+    <Card withBorder key={`${amuletName}_${stringifyStats(amulet.stats)}`} style={{ margin: '6px', width: '180px', cursor: 'pointer' }} onClick={open}>
       <Card.Section pt='md'>
         <AmuletImage rarity={amulet.rarity} shape={amulet.shape} />
       </Card.Section>

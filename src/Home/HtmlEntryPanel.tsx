@@ -22,7 +22,7 @@ export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
                const { amulets, pageNumber } = extractAmuletsFromHtml(pasted)
                dispatcher({ arrayIndex, amulets, pageNumber })
              } catch (error: unknown) {
-               warnUserOfError(error, 'paste-error', 'This typically means incorrect/invalid HTML was pasted.')
+               warnUserOfError(error, 'paste-error', 'This typically means incorrect/invalid HTML was pasted.', 'Issue reading HTML')
              }
            }}
            onChange={() => {}} // mute the console warning. We don't want readOnly because it prevents right-click pasting in some(?) browsers

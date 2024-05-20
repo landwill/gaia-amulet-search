@@ -137,7 +137,7 @@ export const warnUser = (message: string, id: string, title: React.ReactNode = '
   console.warn(message)
 }
 
-export const warnUserOfError = (error: unknown, id: string, suffixMessage: string | null = null) => {
+export const warnUserOfError = (error: unknown, id: string, suffixMessage: string | null = null, title: React.ReactNode = 'Warning') => {
   const messageParts = []
   if (typeof error === 'object' && error != null && 'message' in error && typeof error.message === 'string') {
     messageParts.push(error.message)
@@ -145,7 +145,7 @@ export const warnUserOfError = (error: unknown, id: string, suffixMessage: strin
     messageParts.push('Cause unknown')
   }
   if (suffixMessage) messageParts.push(suffixMessage)
-  warnUser(messageParts.join(' '), id)
+  warnUser(messageParts.join(' '), id, title)
 }
 
 export function stringifyStats(stats: Stat[]): string {

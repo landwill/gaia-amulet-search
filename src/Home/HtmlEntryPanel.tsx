@@ -2,7 +2,7 @@
 import { Button, Input } from '@mantine/core'
 import React from 'react'
 import { PageAction } from '../interfaces.ts'
-import { extractAmuletsFromHtml, warnUserOfError } from '../ResultsScreen/utils.ts'
+import { extractAmuletsFromHtml, ExtractionError, warnUser, warnUserOfError } from '../ResultsScreen/utils.ts'
 
 export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
   dispatcher: React.Dispatch<PageAction>,
@@ -22,7 +22,12 @@ export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
                const { amulets, pageNumber } = extractAmuletsFromHtml(pasted)
                dispatcher({ arrayIndex, amulets, pageNumber })
              } catch (error: unknown) {
-               warnUserOfError(error, 'paste-error', 'This typically means incorrect/invalid HTML was pasted.', 'Issue reading HTML')
+               if (error instanceof ExtractionError) {
+                 warnUserOfError(error, pasted, 'Issue reading HTML')
+               } else {
+                 console.error(error)
+                 warnUser('See the developer console for more info, and please consider raising a bug report.', 'paste-error', 'Something went wrong', false)
+               }
              }
            }}
            onChange={() => {}} // mute the console warning. We don't want readOnly because it prevents right-click pasting in some(?) browsers

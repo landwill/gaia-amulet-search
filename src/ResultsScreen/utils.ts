@@ -76,7 +76,11 @@ const extractAmuletsFromTab = (tab: Element, pageNumber: number): Amulet[] => {
 
 function getPageNumber(parsedHtml: Document) {
   const kindredPageUlElement = parsedHtml.getElementById('kindred_pg')
-  if (!kindredPageUlElement) throw new Error('Failed to identify the page number.')
+  if (!kindredPageUlElement) {
+    // Since we've hopefully caught all "page is still loading" related issues, failing to find a page number
+    // should imply that the user's inventory spans only a single page, thus we're on page one.
+    return 1
+  }
   for (const pageLi of kindredPageUlElement.children) {
     if (!(pageLi instanceof HTMLLIElement)) continue
     const aTags = pageLi.getElementsByTagName('a')
@@ -88,11 +92,33 @@ function getPageNumber(parsedHtml: Document) {
   throw new Error('Page number not found')
 }
 
-export const extractAmuletsFromHtml = (html: string): { amulets: Amulet[], pageNumber: number } => {
-  if (html === '') throw new Error()
+export class ExtractionError extends Error {}
+
+function parseAndValidateHtml(html: string) {
+  if (!html) throw new ExtractionError('Can\'t extract amulets from an empty clipboard.')
+  if (!html.includes('<html')) {
+    let errorMessage: string
+    if (html.toLowerCase().includes('doctype')) {
+      errorMessage = 'Pasted unexpected HTML; you probably pasted the <!DOCTYPE> element, but we need the element below it (beginning with \'<html...\').'
+    } else {
+      // noinspection HtmlRequiredLangAttribute
+      errorMessage = 'Pasted unexpected content; clipboard should start with \'<html\'.'
+    }
+    throw new ExtractionError(errorMessage)
+  }
+
   const parsedHtml = parser.parseFromString(html, 'text/html')
   const mainInventories = parsedHtml.getElementsByClassName('main-inventory')
-  if (mainInventories.length === 0) throw new Error('Failed to identify the inventory.')
+  if (mainInventories.length === 0) throw new ExtractionError('Failed to identify the inventory.')
+  if (mainInventories.length > 1) console.debug('Multiple \'main inventories\' found!')
+  const kindredInventoryElement = parsedHtml.getElementById('kindred')
+  if (kindredInventoryElement?.children.length === 2 && kindredInventoryElement.children[0].className === 'loader') throw new ExtractionError('Kindred tab hasn\'t been loaded. Please ensure that you clicked the Kindred tab in the trade window, and waited for it to load all items. Please also ensure that you used Developer Console instead of opening a new tab to \'view source\'.')
+  if (mainInventories[0].className.includes('loading')) throw new ExtractionError('Inventory is loading. Please wait another moment before copying HTML, and ensure that your HTML viewer didn\'t open a new tab (i.e. please use the Developer Console).')
+  return { parsedHtml, mainInventories }
+}
+
+export const extractAmuletsFromHtml = (html: string): { amulets: Amulet[], pageNumber: number } => {
+  const { parsedHtml, mainInventories } = parseAndValidateHtml(html)
 
   const pageNumber = getPageNumber(parsedHtml)
 
@@ -127,24 +153,24 @@ export const amuletImageMap: Record<Shape, Record<Rarity, string>> = {
   }
 }
 
-export const warnUser = (message: string, id: string, title: React.ReactNode = 'Warning') => {
+export const warnUser = (message: string, id: string, title: React.ReactNode = 'Warning', warnConsole = true) => {
   notifications.show({
     id,
     color: 'orange',
     title,
-    message
+    message,
+    autoClose: 8000
   })
-  console.warn(message)
+  if (warnConsole) console.warn(message)
 }
 
-export const warnUserOfError = (error: unknown, id: string, suffixMessage: string | null = null, title: React.ReactNode = 'Warning') => {
+export const warnUserOfError = (error: unknown, id: string, title: React.ReactNode = 'Warning') => {
   const messageParts = []
   if (typeof error === 'object' && error != null && 'message' in error && typeof error.message === 'string') {
     messageParts.push(error.message)
   } else {
     messageParts.push('Cause unknown')
   }
-  if (suffixMessage) messageParts.push(suffixMessage)
   warnUser(messageParts.join(' '), id, title)
 }
 

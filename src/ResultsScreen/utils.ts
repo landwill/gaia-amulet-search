@@ -10,28 +10,42 @@ import rareSquareAmulet from '/amuletRareSquare.png'
 import { notifications } from '@mantine/notifications'
 import React from 'react'
 import { Amulet, Rarity, Shape, Stat } from '../interfaces.ts'
+import { ExtractionError } from './errors.ts'
 
 const parser = new DOMParser()
 
-const stringToRarityMap = new Map<'Common' | 'Rare' | 'Legendary', Rarity>([
+const STRING_TO_RARITY_MAP = new Map<string, Rarity>([
   ['Common', Rarity.Common],
   ['Rare', Rarity.Rare],
   ['Legendary', Rarity.Legendary]])
 
+export const AMULET_IMAGE_MAP: Record<Shape, Record<Rarity, string>> = {
+  Square: {
+    [Rarity.Common]: commonSquareAmulet,
+    [Rarity.Rare]: rareSquareAmulet,
+    [Rarity.Legendary]: legendarySquareAmulet
+  },
+  Circle: {
+    [Rarity.Common]: commonCircleAmulet,
+    [Rarity.Rare]: rareCircleAmulet,
+    [Rarity.Legendary]: legendaryCircleAmulet
+  },
+  Diamond: {
+    [Rarity.Common]: commonDiamondAmulet,
+    [Rarity.Rare]: rareDiamondAmulet,
+    [Rarity.Legendary]: legendaryDiamondAmulet
+  }
+}
+
 export const stringToRarity = (rarity: string): Rarity => {
-  if (!isStringValidRarity(rarity)) throw new Error(`Unexpected rarity: ${rarity}`)
-  const retVal = stringToRarityMap.get(rarity)
-  if (retVal == null) throw new Error('Failed to map rarity to enum')
+  const retVal = STRING_TO_RARITY_MAP.get(rarity)
+  if (retVal == null) throw new Error(`Failed to map rarity ${rarity} to enum`)
   return retVal
 }
 
 export function extractStats(amuletImageElement: HTMLImageElement): Stat[] {
   const statMatches = amuletImageElement.alt.matchAll(/\+(\d+)% ([\w ]+)\n/g)
   return [...statMatches].map(e => ({ statName: e[2], bonus: Number(e[1]) } satisfies Stat)).filter(s => !s.statName.match(/Experience vs/))
-}
-
-const isStringValidRarity = (key: string): key is 'Common' | 'Rare' | 'Legendary' => {
-  return ['Common', 'Rare', 'Legendary'].includes(key)
 }
 
 export function extractAmuletDetails(amuletImageElement: HTMLImageElement, page: number): Amulet {
@@ -47,7 +61,6 @@ export function extractAmuletDetails(amuletImageElement: HTMLImageElement, page:
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const amuletRarityString = amuletSpecs[1] ?? 'Common'
 
-  if (!isStringValidRarity(amuletRarityString)) throw new Error(`Unexpected rarity: ${amuletRarityString}`)
   const rarity: Rarity = stringToRarity(amuletRarityString)
   const shape: Shape = amuletSpecs[2] as Shape
   return { stats, rarity, shape, location: { id: amuletImageElement.id, page } }
@@ -74,25 +87,22 @@ const extractAmuletsFromTab = (tab: Element, pageNumber: number): Amulet[] => {
   return amulets
 }
 
-function getPageNumber(parsedHtml: Document) {
+export function getPageNumber(parsedHtml: Document) {
   const kindredPageUlElement = parsedHtml.getElementById('kindred_pg')
   if (!kindredPageUlElement) {
     // Since we've hopefully caught all "page is still loading" related issues, failing to find a page number
     // should imply that the user's inventory spans only a single page, thus we're on page one.
     return 1
   }
-  for (const pageLi of kindredPageUlElement.children) {
-    if (!(pageLi instanceof HTMLLIElement)) continue
+  for (const pageLi of kindredPageUlElement.getElementsByTagName('LI')) {
     const aTags = pageLi.getElementsByTagName('a')
     if (aTags.length === 1 && aTags[0].className === 'selected') {
-      const pageNumberString = aTags[0].innerText
+      const pageNumberString = aTags[0].textContent
       return Number(pageNumberString)
     }
   }
   throw new Error('Page number not found')
 }
-
-export class ExtractionError extends Error {}
 
 function parseAndValidateHtml(html: string) {
   if (!html) throw new ExtractionError('Can\'t extract amulets from an empty clipboard.')
@@ -114,13 +124,13 @@ function parseAndValidateHtml(html: string) {
   const kindredInventoryElement = parsedHtml.getElementById('kindred')
   if (kindredInventoryElement?.children.length === 2 && kindredInventoryElement.children[0].className === 'loader') throw new ExtractionError('Kindred tab hasn\'t been loaded. Please ensure that you clicked the Kindred tab in the trade window, and waited for it to load all items. Please also ensure that you used Developer Console instead of opening a new tab to \'view source\'.')
   if (mainInventories[0].className.includes('loading')) throw new ExtractionError('Inventory is loading. Please wait another moment before copying HTML, and ensure that your HTML viewer didn\'t open a new tab (i.e. please use the Developer Console).')
-  return { parsedHtml, mainInventories }
+
+  const pageNumber = getPageNumber(parsedHtml)
+  return { pageNumber, mainInventories }
 }
 
 export const extractAmuletsFromHtml = (html: string): { amulets: Amulet[], pageNumber: number } => {
-  const { parsedHtml, mainInventories } = parseAndValidateHtml(html)
-
-  const pageNumber = getPageNumber(parsedHtml)
+  const { pageNumber, mainInventories } = parseAndValidateHtml(html)
 
   const amulets = []
   for (const inventory of mainInventories) {
@@ -133,24 +143,6 @@ export const extractAmuletsFromHtml = (html: string): { amulets: Amulet[], pageN
     }
   }
   return { amulets, pageNumber }
-}
-
-export const amuletImageMap: Record<Shape, Record<Rarity, string>> = {
-  Square: {
-    [Rarity.Common]: commonSquareAmulet,
-    [Rarity.Rare]: rareSquareAmulet,
-    [Rarity.Legendary]: legendarySquareAmulet
-  },
-  Circle: {
-    [Rarity.Common]: commonCircleAmulet,
-    [Rarity.Rare]: rareCircleAmulet,
-    [Rarity.Legendary]: legendaryCircleAmulet
-  },
-  Diamond: {
-    [Rarity.Common]: commonDiamondAmulet,
-    [Rarity.Rare]: rareDiamondAmulet,
-    [Rarity.Legendary]: legendaryDiamondAmulet
-  }
 }
 
 export const warnUser = (message: string, id: string, title: React.ReactNode = 'Warning', warnConsole = true) => {

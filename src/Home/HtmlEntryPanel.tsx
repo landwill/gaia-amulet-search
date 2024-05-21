@@ -2,7 +2,8 @@
 import { Button, Input } from '@mantine/core'
 import React from 'react'
 import { PageAction } from '../interfaces.ts'
-import { extractAmuletsFromHtml, ExtractionError, warnUser, warnUserOfError } from '../ResultsScreen/utils.ts'
+import { ExtractionError } from '../ResultsScreen/errors.ts'
+import { extractAmuletsFromHtml, warnUser, warnUserOfError } from '../ResultsScreen/utils.ts'
 
 export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
   dispatcher: React.Dispatch<PageAction>,

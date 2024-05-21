@@ -1,0 +1,1 @@
+export class ExtractionError extends Error {}

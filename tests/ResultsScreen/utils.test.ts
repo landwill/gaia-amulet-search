@@ -1,0 +1,56 @@
+import { Amulet, Rarity, Stat } from '../../src/interfaces'
+import pageWithAmulets from './data/pageWithAmulets.json'
+
+import { extractAmuletDetails, extractAmuletsFromHtml, extractStats } from '../../src/ResultsScreen/utils.ts'
+
+describe('extractStats', () => {
+  it('extracts stats appropriately in ideal conditions', () => {
+    const id = '123.456'
+    const testAmuletImage = document.createElement('img')
+    testAmuletImage.alt = `[Kindred] Rare Square Amulet\n+7% Damage\n`
+    testAmuletImage.id = id
+
+    const stats = extractStats(testAmuletImage)
+
+    expect(stats).toStrictEqual([{ statName: 'Damage', bonus: 7 } satisfies Stat])
+  })
+})
+
+describe('extractAmuletDetails', () => {
+  it('extracts all info in ideal conditions', () => {
+    const id = '123.456'
+    const pageNumber = 6
+    const location = { id, page: pageNumber }
+    const rarity = Rarity.Rare
+    const shape = 'Square'
+    const expectedStats: Stat[] = [{ statName: 'Damage', bonus: 7 }]
+    const testAmuletImage = document.createElement('img')
+    testAmuletImage.alt = `[Kindred] Rare Square Amulet\n+7% Damage\n`
+    testAmuletImage.id = id
+
+    const result = extractAmuletDetails(testAmuletImage, pageNumber)
+
+    expect(result).toStrictEqual({ rarity, shape, location, stats: expectedStats } satisfies Amulet)
+  })
+})
+
+describe('extractAmuletsFromHtml', () => {
+  it.each([pageWithAmulets.content, '<!DOCTYPE html>' + pageWithAmulets.content])('succeeds for valid & complete html', (html) => {
+    const { amulets, pageNumber } = extractAmuletsFromHtml(html)
+    expect(Array.isArray(amulets)).toBeTruthy()
+    expect(amulets).length(473)
+    expect(pageNumber).toBe(2)
+  })
+
+  it('fails for doctype-only pastes', () => {
+    const doctypeHtml = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+    const expectedErrorMessage = 'Pasted unexpected HTML; you probably pasted the <!DOCTYPE> element, but we need the element below it (beginning with \'<html...\').'
+    expect(() => extractAmuletsFromHtml(doctypeHtml)).toThrowError(expectedErrorMessage)
+  })
+
+  it('fails for non-html pastes', () => {
+    const doctypeHtml = 'test'
+    const expectedErrorMessage = 'Pasted unexpected content; clipboard should start with \'<html\''
+    expect(() => extractAmuletsFromHtml(doctypeHtml)).toThrowError(expectedErrorMessage)
+  })
+})

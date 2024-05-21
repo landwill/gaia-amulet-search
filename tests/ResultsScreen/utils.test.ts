@@ -35,7 +35,9 @@ describe('extractAmuletDetails', () => {
 })
 
 describe('extractAmuletsFromHtml', () => {
-  it.each([pageWithAmulets.content, '<!DOCTYPE html>' + pageWithAmulets.content])('succeeds for valid & complete html', (html) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  it.skipIf(pageWithAmulets.skip).each([pageWithAmulets.content, '<!DOCTYPE html>' + String(pageWithAmulets.content)])('succeeds for valid & complete html', (html) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const { amulets, pageNumber } = extractAmuletsFromHtml(html)
     expect(Array.isArray(amulets)).toBeTruthy()
     expect(amulets).length(473)

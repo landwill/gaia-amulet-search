@@ -19,7 +19,7 @@ function App() {
     <div style={{ marginBottom: 24, alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
       <HtmlPasteList pastedHtml={pastedHtml} dispatcher={dispatchPastedHtmlAction} />
       <Text my={24}>
-        Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
+        Insert the HTML of a Trade page into a text field above, and you will be able to filter your amulets below.
       </Text>
       <ExternalLinkButton href={GUIDE_URL} mb={12}>Click here for a guide</ExternalLinkButton>
       <Notices notices={NOTICES} />

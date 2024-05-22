@@ -1,7 +1,6 @@
 export interface HtmlDumpInfo {
   amulets: Amulet[] | null
   pageNumber: number
-  deleted: boolean
 }
 
 interface AmuletBaseInfo {
@@ -37,16 +36,15 @@ export enum Rarity {
   Legendary
 }
 
-export interface SetAmuletsForPage {
-  action: 'set-amulets'
-  arrayIndex: number
-  amulets: Amulet[]
-  pageNumber: number
-}
-
 export interface DeletePage {
   action: 'delete'
   arrayIndex: number | 'all'
 }
 
-export type PageAction = SetAmuletsForPage | DeletePage
+export interface PushAmuletPage {
+  action: 'push-amulets'
+  amulets: Amulet[]
+  pageNumber: number
+}
+
+export type PageAction = DeletePage | PushAmuletPage

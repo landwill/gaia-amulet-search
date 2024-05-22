@@ -4,11 +4,9 @@ import { HtmlDumpInfo, Rarity } from '../../src/interfaces.ts'
 const NON_EMPTY_HTML_PASTE_STATE: HtmlDumpInfo[] = [
   {
     amulets: [{ stats: [], rarity: Rarity.Rare, shape: 'Square', location: { id: 'abc', page: 2 } }],
-    deleted: false,
     pageNumber: 6
   }, {
     amulets: [{ stats: [], rarity: Rarity.Legendary, shape: 'Diamond', location: { id: 'def', page: 1 } }],
-    deleted: false,
     pageNumber: 3
   }
 ]
@@ -28,6 +26,7 @@ describe('pastedHtmlReducer', () => {
   it('deletes a single page, when given the \'delete (page number\' action', () => {
     // given
     expect(NON_EMPTY_HTML_PASTE_STATE).not.toStrictEqual(INITIAL_HTML_DUMPS_STATE) // else the test may be meaningless
+    const initialLength = NON_EMPTY_HTML_PASTE_STATE.length
     const indexToDelete = 1
 
     // when
@@ -35,6 +34,6 @@ describe('pastedHtmlReducer', () => {
 
     // then
     expect(returnedState).not.toStrictEqual(NON_EMPTY_HTML_PASTE_STATE)
-    expect(returnedState[indexToDelete].deleted).toBeTruthy()
+    expect(returnedState.length).not.toBe(initialLength)
   })
 })

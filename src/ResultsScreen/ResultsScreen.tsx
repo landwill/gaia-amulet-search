@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CenteredAlert } from '../components/CenteredAlert.tsx'
 import { Amulet, AmuletSummary, HtmlDumpInfo, Rarity } from '../interfaces.ts'
 import { AmuletGrid } from './AmuletGrid.tsx'
 import { SearchPanel } from './SearchPanel.tsx'
@@ -40,8 +41,7 @@ const amuletSatisfiesFilter = (amulet: AmuletSummary, searchState: SearchState):
 }
 
 function mapAndFilterAmuletTuples(inventoryHtml: HtmlDumpInfo[]) {
-  const amulets = inventoryHtml.filter(dumpInfo => !dumpInfo.deleted)
-    .map(dumpInfo => dumpInfo.amulets)
+  const amulets = inventoryHtml.map(dumpInfo => dumpInfo.amulets)
     .filter((amulets): amulets is NonNullable<typeof amulets> => amulets != null)
     .flatMap(amuletSummary => Array.from(amuletSummary.values()))
   return [...summarizeAmulets(amulets)]
@@ -54,7 +54,9 @@ export default function ResultsScreen({ inventoryHtml }: { inventoryHtml: HtmlDu
     stats: [{ amount: '', stat: 'Accuracy' }, { amount: '', stat: 'Accuracy' }, { amount: '', stat: 'Accuracy' }]
   })
 
-  if (inventoryHtml == null || inventoryHtml.length === 0) return <div>No inventory data found.</div>
+  if (inventoryHtml == null || inventoryHtml.length === 0) {
+    return <CenteredAlert maxWidth={280}>No inventory HTML has been pasted yet. Once it has, your amulets will appear here!</CenteredAlert>
+  }
 
   const amuletTuples = mapAndFilterAmuletTuples(inventoryHtml)
 

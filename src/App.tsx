@@ -4,13 +4,10 @@ import { Image, Text, Title } from '@mantine/core'
 import { useReducer } from 'react'
 import { ExternalLinkButton } from './components/ExternalLinkButton.tsx'
 import { Notices } from './components/Notices.tsx'
+import { GUIDE_URL, NOTICES } from './config.ts'
 import { INITIAL_HTML_DUMPS_STATE, pastedHtmlReducer } from './helpers/dispatchers.ts'
 import { HtmlPasteList } from './page_segments/HtmlPasteList.tsx'
 import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
-
-const NOTICES = [
-  'Shareable (\'ghosting\') links, coming soon™️'
-]
 
 function App() {
   const [pastedHtml, dispatchPastedHtmlAction] = useReducer(pastedHtmlReducer, INITIAL_HTML_DUMPS_STATE)
@@ -24,7 +21,7 @@ function App() {
       <Text my={24}>
         Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
       </Text>
-      <ExternalLinkButton href='https://github.com/landwill/gaia-amulet-search#readme' mb={12}>Click here for a guide</ExternalLinkButton>
+      <ExternalLinkButton href={GUIDE_URL} mb={12}>Click here for a guide</ExternalLinkButton>
       <Notices notices={NOTICES} />
     </div>
     <ResultsScreen inventoryHtml={pastedHtml} />

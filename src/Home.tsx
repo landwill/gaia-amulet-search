@@ -1,10 +1,11 @@
 import legendaryDiamondAmulet from '/amuletLegendaryDiamond.png'
 import './App.css'
-import { Button, Text, Title } from '@mantine/core'
-import { ExternalLinkIcon } from 'lucide-react'
+import { Image, Text, Title } from '@mantine/core'
 import { useReducer } from 'react'
-import { HtmlEntryPanel } from './Home/HtmlEntryPanel.tsx'
+import { ExternalLinkButton } from './components/ExternalLinkButton.tsx'
+import { Notices } from './components/Notices.tsx'
 import { DeletePage, HtmlDumpInfo, PageAction, SetAmuletsForPage } from './interfaces.ts'
+import { HtmlPasteList } from './page_segments/HtmlPasteList.tsx'
 import ResultsScreen from './ResultsScreen/ResultsScreen.tsx'
 
 const INITIAL_HTML_DUMPS_STATE: HtmlDumpInfo[] = [{ amulets: null, deleted: false, pageNumber: 0 }]
@@ -13,18 +14,18 @@ const isIndexedAction = (action: PageAction): action is SetAmuletsForPage | Dele
   return 'arrayIndex' in action
 }
 
-const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
-  if ('action' in action) {
+const pastedHtmlReducer = (state: HtmlDumpInfo[], dispatchedAction: PageAction) => {
+  if ('action' in dispatchedAction && dispatchedAction.action === 'delete') {
     return INITIAL_HTML_DUMPS_STATE
   }
-  if (!isIndexedAction(action)) throw new Error('Bug; failed to return despite not being an indexed action.')
+  if (!isIndexedAction(dispatchedAction)) throw new Error('Bug; failed to return despite not being an indexed action.')
 
   const newState = [...state]
-  if ('pageNumber' in action && 'amulets' in action) {
-    const { arrayIndex, pageNumber, amulets } = action
+  if ('pageNumber' in dispatchedAction && 'amulets' in dispatchedAction) {
+    const { arrayIndex, pageNumber, amulets } = dispatchedAction
     newState[arrayIndex] = { ...newState[arrayIndex], amulets, pageNumber }
   } else {
-    const { arrayIndex, ...rest } = action
+    const { arrayIndex, ...rest } = dispatchedAction
     newState[arrayIndex] = { ...newState[arrayIndex], ...rest }
   }
 
@@ -34,44 +35,27 @@ const htmlDumpReducer = (state: HtmlDumpInfo[], action: PageAction) => {
   return newState
 }
 
-const notices = [
+const NOTICES = [
   'Shareable (\'ghosting\') links, coming soon™️'
 ]
 
 function Home() {
-  const [htmlDumps, setHtmlDump] = useReducer(htmlDumpReducer, INITIAL_HTML_DUMPS_STATE)
+  const [pastedHtml, dispatchPastedHtmlAction] = useReducer(pastedHtmlReducer, INITIAL_HTML_DUMPS_STATE)
 
-  const hasSomethingToClear = htmlDumps.filter(d => !d.deleted && d.amulets != null).length > 0
-
-  return (
-    <>
-      <img src={legendaryDiamondAmulet} alt='Legendary diamond amulet icon' className='logo'
-           style={{ display: 'inline', height: '4rem', marginBottom: 24 }} />
-      <div style={{ marginBottom: 24, alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
-        <Title order={1} style={{ fontSize: '2.5rem', marginBottom: '3rem', lineHeight: 1 }} opacity='0.8'>Gaia Online Amulet Search</Title>
-        <div style={{ marginBottom: 12 }}>
-          {
-            htmlDumps.map((htmlDumpInfo: HtmlDumpInfo, index: number) =>
-              htmlDumpInfo.deleted
-                ? undefined
-                : <HtmlEntryPanel key={index} dispatcher={setHtmlDump} arrayIndex={index} pageNumber={htmlDumpInfo.pageNumber} />)
-          }
-          <Button variant='danger' onClick={() => {setHtmlDump({ action: 'delete' })}} disabled={!hasSomethingToClear}>Clear all</Button>
-        </div>
-        <Text mt={12} mb={12}>
-          Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
-        </Text>
-        <Button component='a'
-                href='https://github.com/landwill/gaia-amulet-search#readme'
-                target='_blank'
-                variant='outline'
-                rightSection={<ExternalLinkIcon size='20' />}
-                mb={12}>Click here for a guide</Button>
-        {notices.map(notice => <span key={notice} style={{ pointerEvents: 'none', color: '#9CA3AF' }}>{notice}</span>)}
-      </div>
-      <ResultsScreen inventoryHtml={htmlDumps} />
-    </>
-  )
+  return <>
+    <Image h='4rem' w='4rem' mt={{ base: '0.5rem', md: '2rem' }} mb={{ base: '1.5rem', md: '3rem' }} src={legendaryDiamondAmulet}
+           alt='Legendary diamond amulet icon' className='logo' style={{ display: 'inline' }} />
+    <Title order={1} style={{ fontSize: '2.5rem', marginBottom: '3rem', lineHeight: 1 }} opacity='0.8'>Gaia Online Amulet Search</Title>
+    <div style={{ marginBottom: 24, alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
+      <HtmlPasteList pastedHtml={pastedHtml} dispatcher={dispatchPastedHtmlAction} />
+      <Text my={24}>
+        Insert the HTML of a Trade page into a text field above, and your amulets will be displayed below.
+      </Text>
+      <ExternalLinkButton href='https://github.com/landwill/gaia-amulet-search#readme' mb={12}>Click here for a guide</ExternalLinkButton>
+      <Notices notices={NOTICES} />
+    </div>
+    <ResultsScreen inventoryHtml={pastedHtml} />
+  </>
 }
 
 export default Home

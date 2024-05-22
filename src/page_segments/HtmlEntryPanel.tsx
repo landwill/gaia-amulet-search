@@ -1,15 +1,16 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { Button, Input } from '@mantine/core'
 import React from 'react'
 import { PageAction } from '../interfaces.ts'
 import { ExtractionError } from '../ResultsScreen/errors.ts'
 import { extractAmuletsFromHtml, warnUser, warnUserOfError } from '../ResultsScreen/utils.ts'
 
-export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: {
-  dispatcher: React.Dispatch<PageAction>,
-  arrayIndex: number,
+interface HtmlEntryPanelProps {
+  dispatcher: React.Dispatch<PageAction>
+  arrayIndex: number
   pageNumber: number
-}) => {
+}
+
+export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: HtmlEntryPanelProps) => {
   const isHtmlPopulated = pageNumber !== 0
 
   return <div style={{ display: 'flex', marginBottom: '0.75rem' }}>

@@ -17,6 +17,6 @@ export const HtmlPasteList = ({ pastedHtml, dispatcher }: HtmlPasteListProps) =>
         !htmlDump.deleted &&
           <HtmlEntryPanel key={index} dispatcher={dispatcher} arrayIndex={index} pageNumber={htmlDump.pageNumber} />)
     }
-    <Button variant='danger' onClick={() => {dispatcher({ action: 'delete' })}} disabled={!hasSomethingToClear}>Clear all</Button>
+    <Button variant='danger' onClick={() => {dispatcher({ action: 'delete', arrayIndex: 'all' })}} disabled={!hasSomethingToClear}>Clear all</Button>
   </div>
 }

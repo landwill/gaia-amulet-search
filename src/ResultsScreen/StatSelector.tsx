@@ -13,7 +13,7 @@ export interface SearchState {
   stats: StatSearch[]
 }
 
-const statNames = [
+const STAT_NAMES = [
   'Accuracy',
   'Damage',
   'Life',
@@ -50,7 +50,7 @@ export const StatSelector = ({ statNumber, values, setSearchState }: {
   const { amount, stat } = values
 
   const label = `Stat ${String(statNumber)}`
-  const select = <NativeSelect data={statNames}
+  const select = <NativeSelect data={STAT_NAMES}
                                rightSectionWidth={28}
                                style={{ width: '100%' }}
                                value={stat}

@@ -37,21 +37,16 @@ export enum Rarity {
   Legendary
 }
 
-interface HtmlDumpActionBase {
+export interface SetAmuletsForPage {
   arrayIndex: number
-}
-
-export interface SetAmuletsForPage extends HtmlDumpActionBase {
+  action: 'set-amulets'
   amulets: Amulet[]
   pageNumber: number
 }
 
-export interface DeletePage extends HtmlDumpActionBase {
-  deleted: true
-}
-
-interface ClearAllDumps {
+export interface DeletePage {
+  arrayIndex: number | 'all'
   action: 'delete'
 }
 
-export type PageAction = SetAmuletsForPage | DeletePage | ClearAllDumps
+export type PageAction = SetAmuletsForPage | DeletePage

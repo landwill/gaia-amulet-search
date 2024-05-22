@@ -22,7 +22,7 @@ export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: HtmlE
              const pasted = e.clipboardData.getData('text/plain')
              try {
                const { amulets, pageNumber } = extractAmuletsFromHtml(pasted)
-               dispatcher({ arrayIndex, amulets, pageNumber })
+               dispatcher({ action: 'set-amulets', arrayIndex, amulets, pageNumber })
              } catch (error: unknown) {
                if (error instanceof ExtractionError) {
                  warnUserOfError(error, pasted, 'Issue reading HTML')
@@ -37,7 +37,7 @@ export const HtmlEntryPanel = ({ arrayIndex, dispatcher, pageNumber = 0 }: HtmlE
     />
     <Button variant='danger' disabled={!isHtmlPopulated} onClick={e => {
       e.preventDefault()
-      dispatcher({ arrayIndex, deleted: true })
+      dispatcher({ action: 'delete', arrayIndex })
     }}>
       Delete
     </Button>

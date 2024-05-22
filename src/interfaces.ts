@@ -38,15 +38,15 @@ export enum Rarity {
 }
 
 export interface SetAmuletsForPage {
-  arrayIndex: number
   action: 'set-amulets'
+  arrayIndex: number
   amulets: Amulet[]
   pageNumber: number
 }
 
 export interface DeletePage {
-  arrayIndex: number | 'all'
   action: 'delete'
+  arrayIndex: number | 'all'
 }
 
 export type PageAction = SetAmuletsForPage | DeletePage

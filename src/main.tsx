@@ -4,9 +4,11 @@ import { Button, createTheme, MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import classes from './Button.danger.module.css'
 import App from './App.tsx'
 import './index.css'
+import classes from './Button.danger.module.css'
+import { GitHubCorner } from './components/GitHubCorner.tsx'
+import { PROJECT_GITHUB_URL } from './config.ts'
 
 const theme = createTheme({
   components: {
@@ -22,6 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <MantineProvider theme={theme}>
       <Notifications />
       <App />
+      <GitHubCorner href={PROJECT_GITHUB_URL} />
     </MantineProvider>
   </React.StrictMode>
 )

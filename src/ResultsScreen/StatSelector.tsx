@@ -1,5 +1,6 @@
 import { NativeSelect, NumberInput } from '@mantine/core'
 import React from 'react'
+import { FIELD_MARGIN_BOTTOM } from '../consts.ts'
 
 interface StatSearch {
   amount: number | ''
@@ -62,7 +63,7 @@ export const StatSelector = ({ statNumber, values, setSearchState }: {
                       label={label}
                       rightSection={select}
                       rightSectionWidth={140}
-                      style={{ marginBottom: 8, width: 280 }}
                       value={amount}
+                      mb={FIELD_MARGIN_BOTTOM}
                       onChange={newVal => { updateStatAmountByIndex(setSearchState, statNumber - 1, newVal); }} />
 }

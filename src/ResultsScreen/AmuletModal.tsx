@@ -53,7 +53,7 @@ export function AmuletModal({ opened, onClose, title, stats, amulet }: {
               })
             }}
           >
-            <Text size='xs'>{location.id}</Text>
+            <Text size='xs' truncate>{location.id}</Text>
           </ul>
         ))}
       </div>

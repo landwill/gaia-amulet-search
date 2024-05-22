@@ -5,7 +5,7 @@ import { Notifications } from '@mantine/notifications'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import classes from './Button.danger.module.css'
-import Home from './Home.tsx'
+import App from './App.tsx'
 import './index.css'
 
 const theme = createTheme({
@@ -21,7 +21,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider theme={theme}>
       <Notifications />
-      <Home />
+      <App />
     </MantineProvider>
   </React.StrictMode>
 )

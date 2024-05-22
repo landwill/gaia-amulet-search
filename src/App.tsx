@@ -12,7 +12,7 @@ const NOTICES = [
   'Shareable (\'ghosting\') links, coming soon™️'
 ]
 
-function Home() {
+function App() {
   const [pastedHtml, dispatchPastedHtmlAction] = useReducer(pastedHtmlReducer, INITIAL_HTML_DUMPS_STATE)
 
   return <>
@@ -31,4 +31,4 @@ function Home() {
   </>
 }
 
-export default Home
+export default App

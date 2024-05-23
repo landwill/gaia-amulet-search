@@ -3,19 +3,27 @@ export interface HtmlDumpInfo {
   pageNumber: number
 }
 
+export enum StatEnum {
+  Accuracy,
+  Damage,
+  Life,
+  Magic,
+  'Platinum Find',
+  'Stamina Regen',
+  Stamina,
+  Experience,
+  Resistance,
+  'Experience vs'
+}
+
 interface AmuletBaseInfo {
   shape: Shape
   rarity: Rarity
-  stats: Stat[]
+  stats: Map<StatEnum, number>
 }
 
 export interface Amulet extends AmuletBaseInfo {
   location: AmuletLocation
-}
-
-export interface Stat {
-  statName: string
-  bonus: number
 }
 
 export interface AmuletLocation {

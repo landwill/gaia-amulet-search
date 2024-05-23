@@ -1,7 +1,7 @@
-import { Amulet, Rarity, Stat } from '../../src/interfaces'
-import pageWithAmulets from './data/pageWithAmulets.json'
+import { Amulet, Rarity, StatEnum } from '../../src/interfaces'
 
 import { extractAmuletDetails, extractAmuletsFromHtml, extractStats } from '../../src/ResultsScreen/utils.ts'
+import pageWithAmulets from './data/pageWithAmulets.json'
 
 describe('extractStats', () => {
   it('extracts stats appropriately in ideal conditions', () => {
@@ -12,7 +12,8 @@ describe('extractStats', () => {
 
     const stats = extractStats(testAmuletImage)
 
-    expect(stats).toStrictEqual([{ statName: 'Damage', bonus: 7 } satisfies Stat])
+    expect(stats.size).toBe(1)
+    expect(stats.get(StatEnum.Damage)).toBe(7)
   })
 })
 
@@ -23,7 +24,7 @@ describe('extractAmuletDetails', () => {
     const location = { id, page: pageNumber }
     const rarity = Rarity.Rare
     const shape = 'Square'
-    const expectedStats: Stat[] = [{ statName: 'Damage', bonus: 7 }]
+    const expectedStats = new Map<StatEnum, number>([[StatEnum.Damage, 7]])
     const testAmuletImage = document.createElement('img')
     testAmuletImage.alt = `[Kindred] Rare Square Amulet\n+7% Damage\n`
     testAmuletImage.id = id

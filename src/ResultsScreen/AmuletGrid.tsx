@@ -4,8 +4,8 @@ import { AmuletCard } from './AmuletCard.tsx'
 
 const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple): number => {
   if (amuletA.rarity !== amuletB.rarity) return amuletA.rarity - amuletB.rarity
-  const sumA = amuletA.stats.reduce((prev, curr) => prev + curr.bonus, 0)
-  const sumB = amuletB.stats.reduce((prev, curr) => prev + curr.bonus, 0)
+  const sumA = [...amuletA.stats.values()].reduce((prev, curr) => prev + curr, 0)
+  const sumB = [...amuletB.stats.values()].reduce((prev, curr) => prev + curr, 0)
 
   return sumA - sumB
 }

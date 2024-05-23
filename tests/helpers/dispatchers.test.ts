@@ -3,10 +3,10 @@ import { HtmlDumpInfo, Rarity } from '../../src/interfaces.ts'
 
 const NON_EMPTY_HTML_PASTE_STATE: HtmlDumpInfo[] = [
   {
-    amulets: [{ stats: [], rarity: Rarity.Rare, shape: 'Square', location: { id: 'abc', page: 2 } }],
+    amulets: [{ stats: new Map(), rarity: Rarity.Rare, shape: 'Square', location: { id: 'abc', page: 2 } }],
     pageNumber: 6
   }, {
-    amulets: [{ stats: [], rarity: Rarity.Legendary, shape: 'Diamond', location: { id: 'def', page: 1 } }],
+    amulets: [{ stats: new Map(), rarity: Rarity.Legendary, shape: 'Diamond', location: { id: 'def', page: 1 } }],
     pageNumber: 3
   }
 ]

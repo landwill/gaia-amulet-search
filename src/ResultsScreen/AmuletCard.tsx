@@ -1,9 +1,9 @@
 import { Card, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { AmuletSummary, Rarity } from '../interfaces.ts'
+import { AmuletSummary, Rarity, StatEnum } from '../interfaces.ts'
 import { AmuletImage } from './AmuletImage.tsx'
 import { AmuletModal } from './AmuletModal.tsx'
-import { stringifyStat, stringifyStats } from './utils.ts'
+import { stringifyStats } from './utils.ts'
 
 function getAmuletName(amulet: AmuletSummary) {
   const amuletNameParts = []
@@ -18,11 +18,11 @@ export const AmuletCard = ({ amulet }: { amulet: AmuletSummary }) => {
 
   const amuletName = getAmuletName(amulet)
 
-  const stats = amulet.stats.length
-    ? amulet.stats.map(stat =>
-      <div key={stringifyStat(stat)}>
-        <Text size='xs' c='dimmed'>{stat.statName}</Text>
-        <Text fw={500} size='sm' ta='center'>{`+${String(stat.bonus)}%`}</Text>
+  const stats = amulet.stats.size
+    ? [...amulet.stats.entries()].map(([statName, bonus]) =>
+      <div key={statName}>
+        <Text size='xs' c='dimmed' ta='center'>{StatEnum[statName]}</Text>
+        <Text fw={500} size='sm' ta='center'>{`+${String(bonus)}%`}</Text>
       </div>)
     : <Text size='xs'>Experience vs ...</Text>
 

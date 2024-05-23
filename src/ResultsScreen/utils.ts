@@ -9,7 +9,7 @@ import rareDiamondAmulet from '/amuletRareDiamond.png'
 import rareSquareAmulet from '/amuletRareSquare.png'
 import { notifications } from '@mantine/notifications'
 import React from 'react'
-import { Amulet, Rarity, Shape, Stat } from '../interfaces.ts'
+import { Amulet, Rarity, Shape, StatEnum } from '../interfaces.ts'
 import { ExtractionError } from './errors.ts'
 
 const parser = new DOMParser()
@@ -43,9 +43,20 @@ export const stringToRarity = (rarity: string): Rarity => {
   return retVal
 }
 
-export function extractStats(amuletImageElement: HTMLImageElement): Stat[] {
+export const stringToStatEnum = (str: string) => {
+  if (str.startsWith('Experience vs')) return StatEnum['Experience vs']
+  const retVal = StatEnum[str as keyof typeof StatEnum]
+  if (retVal == null) throw new Error(`Failed to map ${str} to Stat`)
+  return retVal
+}
+
+export function extractStats(amuletImageElement: HTMLImageElement): Map<StatEnum, number> {
+  const stats = new Map<StatEnum, number>
   const statMatches = amuletImageElement.alt.matchAll(/\+(\d+)% ([\w ]+)\n/g)
-  return [...statMatches].map(e => ({ statName: e[2], bonus: Number(e[1]) } satisfies Stat)).filter(s => !s.statName.match(/Experience vs/))
+  ;[...statMatches].map(([, bonus, statName]) => ({ stat: stringToStatEnum(statName), bonus }))
+    .filter(s => s.stat != StatEnum['Experience vs'])
+    .forEach(e => {stats.set(e.stat, Number(e.bonus))})
+  return stats
 }
 
 export function extractAmuletDetails(amuletImageElement: HTMLImageElement, page: number): Amulet {
@@ -166,10 +177,10 @@ export const warnUserOfError = (error: unknown, id: string, title: React.ReactNo
   warnUser(messageParts.join(' '), id, title)
 }
 
-export function stringifyStats(stats: Stat[]): string {
-  return stats.map(stringifyStat).join('|')
+export function stringifyStats(stats: Map<StatEnum, number>): string {
+  return [...stats.entries()].map(stringifyStat).join('|')
 }
 
-export function stringifyStat(s: Stat): string {
-  return `${s.statName}_${String(s.bonus)}`
+export function stringifyStat(s: [StatEnum, number]): string {
+  return `${String(s[0])}_${String(s[1])}`
 }

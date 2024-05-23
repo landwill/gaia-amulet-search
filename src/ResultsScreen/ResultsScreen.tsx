@@ -4,7 +4,7 @@ import { Amulet, AmuletSummary, HtmlDumpInfo, Rarity } from '../interfaces.ts'
 import { AmuletGrid } from './AmuletGrid.tsx'
 import { SearchPanel } from './SearchPanel.tsx'
 import { SearchState } from './StatSelector.tsx'
-import { stringifyStats } from './utils.ts'
+import { stringifyStats, stringToStatEnum } from './utils.ts'
 
 const NUM_AMULET_FILTERS = 3
 
@@ -32,8 +32,8 @@ const amuletSatisfiesFilter = (amulet: AmuletSummary, searchState: SearchState):
     if (searchState.stats[i].amount !== '') {
       const requiredStat = searchState.stats[i]
       if (requiredStat.amount === '') throw new Error('Assertion considering the above if-clause')
-      const currentStat = amulet.stats.find(s => s.statName === requiredStat.stat)
-      if (currentStat == undefined || currentStat.bonus < requiredStat.amount) return false
+      const currentStat = amulet.stats.get(stringToStatEnum(requiredStat.stat))
+      if (currentStat == undefined || currentStat < requiredStat.amount) return false
     }
   }
 

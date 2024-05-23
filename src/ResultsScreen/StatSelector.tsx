@@ -1,6 +1,6 @@
 import { NativeSelect, NumberInput } from '@mantine/core'
 import React from 'react'
-import { FIELD_MARGIN_BOTTOM } from '../consts.ts'
+import { FIELD_MARGIN_BOTTOM, STAT_NAMES } from '../consts.ts'
 
 interface StatSearch {
   amount: number | ''
@@ -12,18 +12,6 @@ export interface SearchState {
   shape: string | null
   stats: StatSearch[]
 }
-
-const STAT_NAMES = [
-  'Accuracy',
-  'Damage',
-  'Life',
-  'Magic',
-  'Platinum Find',
-  'Stamina Regen',
-  'Stamina',
-  'Experience',
-  'Resistance'
-]
 
 const updateStatAmountByIndex = (setSearchIndex: React.Dispatch<React.SetStateAction<SearchState>>, index: number, value: number | string) => {
   if (typeof value === 'string' && value !== '') throw new Error('A string value, which isn\'t empty, was somehow selected from the number selector.')

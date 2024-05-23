@@ -1,3 +1,4 @@
+import { Alert } from '@mantine/core'
 import { AmuletSummary, AmuletTuple } from '../interfaces.ts'
 import { AmuletCard } from './AmuletCard.tsx'
 
@@ -10,15 +11,19 @@ const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple
 }
 
 export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSummary][] }) => {
-  return <div style={{ display: 'grid', justifyContent: 'center' }}>
+  return <div style={{ display: 'grid', justifyContent: 'center' }}> {/*todo reduce these nested divs into one; maintain styling*/}
     <div style={{
       display: 'flex',
       flexDirection: 'row',
       maxWidth: '1000px',
       flexWrap: 'wrap',
       justifyContent: 'center'
-    }}>{amuletTuples.sort(largestStatSumSorter).reverse()
-      .map(([id, amulet]) => <AmuletCard key={id} amulet={amulet} />)}
+    }}>{
+      amuletTuples.length
+        ? amuletTuples.sort(largestStatSumSorter).reverse()
+          .map(([id, amulet]) => <AmuletCard key={id} amulet={amulet} />)
+        : <Alert>No amulets match this filter!</Alert>
+    }
     </div>
   </div>
 }

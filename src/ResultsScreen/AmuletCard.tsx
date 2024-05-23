@@ -22,7 +22,7 @@ export const AmuletCard = ({ amulet }: { amulet: AmuletSummary }) => {
     ? amulet.stats.map(stat =>
       <div key={stringifyStat(stat)}>
         <Text size='xs' c='dimmed'>{stat.statName}</Text>
-        <Text fw={500} size='sm'>{`+${String(stat.bonus)}%`}</Text>
+        <Text fw={500} size='sm' ta='center'>{`+${String(stat.bonus)}%`}</Text>
       </div>)
     : <Text size='xs'>Experience vs ...</Text>
 

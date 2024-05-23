@@ -1,29 +1,18 @@
 import { Modal, Text } from '@mantine/core'
 import React from 'react'
-import { AmuletLocation, AmuletSummary } from '../interfaces.ts'
+import { AmuletSummary } from '../interfaces.ts'
+import { AmuletLocationsList } from '../page_segments/AmuletLocationsList.tsx'
 import { AmuletImage } from './AmuletImage.tsx'
 
-const groupByPage = (locations: AmuletLocation[]): Map<number, AmuletLocation[]> => {
-  return locations.reduce((acc: Map<number, AmuletLocation[]>, location) => {
-    const existingLocations = acc.get(location.page)
-    if (existingLocations == null) {
-      acc.set(location.page, [location])
-    } else {
-      existingLocations.push(location)
-    }
-    return acc
-  }, new Map<number, AmuletLocation[]>())
+interface AmuletModalProps {
+  opened: boolean
+  onClose: () => void
+  title: string
+  stats: React.JSX.Element[] | React.JSX.Element
+  amulet: AmuletSummary
 }
 
-export function AmuletModal({ opened, onClose, title, stats, amulet }: {
-  opened: boolean,
-  onClose: () => void,
-  title: string,
-  stats: React.JSX.Element[] | React.JSX.Element,
-  amulet: AmuletSummary
-}) {
-  const groupedLocations = groupByPage(amulet.locations)
-
+export function AmuletModal({ opened, onClose, title, stats, amulet }: AmuletModalProps) {
   return <Modal opened={opened} onClose={onClose} title={title} styles={{ title: { fontWeight: 'bold', textAlign: 'center' } }} centered>
     <div style={{ textAlign: 'center' }}><AmuletImage rarity={amulet.rarity} shape={amulet.shape} /></div>
     <div style={{
@@ -40,23 +29,6 @@ export function AmuletModal({ opened, onClose, title, stats, amulet }: {
     </div>
     <Text>Inventory locations</Text>
     <Text size='sm' c='dimmed'>Click any ID to copy it to the clipboard.</Text>
-    {Array.from(groupedLocations.entries()).map(([page, locations]) => {
-      return <div key={page} style={{ marginTop: 6, marginBottom: 6 }}>
-        <Text>Page {page}</Text>
-        {locations.map((location) => (
-          <ul
-            key={location.id}
-            style={{ marginTop: 6, marginBottom: 6, cursor: 'pointer' }}
-            onClick={() => {
-              navigator.clipboard.writeText(location.id).catch((r: unknown) => {
-                console.error(r)
-              })
-            }}
-          >
-            <Text size='xs' truncate>{location.id}</Text>
-          </ul>
-        ))}
-      </div>
-    })}
+    <AmuletLocationsList locations={amulet.locations} />
   </Modal>
 }

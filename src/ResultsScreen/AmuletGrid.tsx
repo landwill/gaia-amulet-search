@@ -11,13 +11,13 @@ const largestStatSumSorter = ([, amuletA]: AmuletTuple, [, amuletB]: AmuletTuple
 }
 
 export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSummary][] }) => {
-  return <div style={{ display: 'grid', justifyContent: 'center' }}> {/*todo reduce these nested divs into one; maintain styling*/}
-    <div style={{
+  return <div style={{
       display: 'flex',
       flexDirection: 'row',
-      maxWidth: '1000px',
       flexWrap: 'wrap',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      marginLeft: '-1.5rem',
+      marginRight: '-1.5rem'
     }}>{
       amuletTuples.length
         ? amuletTuples.sort(largestStatSumSorter).reverse()
@@ -25,5 +25,4 @@ export const AmuletGrid = ({ amuletTuples }: { amuletTuples: [string, AmuletSumm
         : <Alert>No amulets match this filter!</Alert>
     }
     </div>
-  </div>
 }
